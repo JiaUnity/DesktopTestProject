@@ -1,0 +1,24 @@
+ManifestFileVersion: 0
+CRC: 3050944418
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 3e8c4af33821205a4ce39d5cf0431a02
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: cfcb18d5c2eb967a34e14942efc353ab
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 49
+  Script: {instanceID: 0}
+- Class: 83
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/Prefabs/Assets4Bundle/AudioSample.mp3
+- Assets/Prefabs/Assets4Bundle/Texture.png
+- Assets/Prefabs/Assets4Bundle/TextDoc.txt
+Dependencies: []
