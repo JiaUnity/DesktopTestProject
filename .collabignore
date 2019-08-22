@@ -1,0 +1,52 @@
+# ===========================
+# Default Collab Ignore Rules
+# ===========================
+
+# OS Generated
+# ============
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+[Tt]humbs.db
+[Dd]esktop.ini
+
+# Visual Studio / MonoDevelop generated
+# =====================================
+[Ee]xported[Oo]bj/
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.sln*user
+*.user
+*.unityproj
+*.booproj
+.vs/
+
+# Unity generated
+# ===============
+[Oo]bj/
+[Bb]uild
+sysinfo.txt
+*.stackdump
+Builds/
+Logs/
+Library/
+Temp/
+obj/
+*.DotSettings
+.Editor
+
+# Others
+# ======
+docerrors.log
+*.orig
+*.orig.meta
+*.bak*
+.idea/
+Assets/Plugins/Editor/JetBrains
+Assets/Plugins/Editor/JetBrains.meta
