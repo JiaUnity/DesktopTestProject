@@ -97,7 +97,7 @@ public class GenericKeyboardMouse : MonoBehaviour
     private void StartHighlightKey(string keyName)
     {
         Transform key = transform.Find("Keys/" + keyName);
-        Debug.Log(keyName + " Down");
+        //Debug.Log(keyName + " Down");
 
         if (key == null)
             AddUnmappedKey(keyName);

@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 0ef6d81213e0f4af49d31eeae11830a4
+timeCreated: 1519772565
+licenseType: Pro
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - preset_one_prefab: {fileID: 1830880024311846, guid: 026903ec6a7d543dd954dd5a2f0f9074,
+      type: 2}
+  - preset_two_prefab: {instanceID: 0}
+  - preset_three_prefab: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

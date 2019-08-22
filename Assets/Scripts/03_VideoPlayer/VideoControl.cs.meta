@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 6c1c8ea7761a448a497d94499a9f3b84
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - m_playPauseControl: {instanceID: 0}
+  - m_playIcon: {fileID: 21300004, guid: 2c660fae91536b54c8a49057fb9f53d6, type: 3}
+  - m_pauseIcon: {fileID: 21300008, guid: 2c660fae91536b54c8a49057fb9f53d6, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

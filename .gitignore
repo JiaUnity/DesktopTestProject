@@ -1,7 +1,3 @@
-# ===========================
-# Default Collab Ignore Rules
-# ===========================
-
 # OS Generated
 # ============
 .DS_Store
@@ -44,8 +40,7 @@ obj/
 # Others
 # ======
 docerrors.log
-*.orig
-*.orig.meta
+*.orig*
 *.bak*
 .idea/
 Assets/Plugins/Editor/JetBrains

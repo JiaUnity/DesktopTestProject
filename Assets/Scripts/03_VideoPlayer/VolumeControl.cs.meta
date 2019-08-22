@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: bf105655d00e146e4a70da0a5fd80d22
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - m_audioSource: {instanceID: 0}
+  - m_muteControl: {instanceID: 0}
+  - m_volumnSliderControl: {instanceID: 0}
+  - m_unmuteIcon: {fileID: 21300000, guid: 2c660fae91536b54c8a49057fb9f53d6, type: 3}
+  - m_muteIcon: {fileID: 21300002, guid: 2c660fae91536b54c8a49057fb9f53d6, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
