@@ -2,17 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UI;
 
-#if UNITY_2019_1_OR_NEWER
-public class Health : MonoBehaviour
-{
-    void Start()
-    {
-        enabled = false;
-    }
-}
-#else
 public class Health : NetworkBehaviour
 {
     public const int m_maxHealth = 100;
@@ -68,4 +58,3 @@ public class Health : NetworkBehaviour
         }
     }
 }
-#endif

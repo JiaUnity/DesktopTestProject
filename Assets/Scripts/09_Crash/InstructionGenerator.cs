@@ -9,12 +9,7 @@ public class InstructionGenerator : MonoBehaviour
     void Start()
     {
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
-
-#if UNITY_2018_1_OR_NEWER
         instruc.text += "Once crashed, the Crash Handler should appear and generate Crash Reports, which can be found at:\n";
-#else
-        instruc.text += "The current version of Unity does NOT support Crash Handler, but the crash report can be found at:\n";
-#endif
         instruc.text += "<color=brown>" + UnityEngine.Windows.CrashReporting.crashReportFolder + "</color>";
 
 #if UNITY_EDITOR_WIN

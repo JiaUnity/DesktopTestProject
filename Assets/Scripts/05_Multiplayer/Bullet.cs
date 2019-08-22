@@ -2,15 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-#if UNITY_2019_1_OR_NEWER
-public class Bullet : MonoBehaviour
-{
-    void Start()
-    {
-        enabled = false;
-    }
-}
-#else
 public class Bullet : MonoBehaviour
 {
     private void OnCollisionEnter(Collision collision)
@@ -24,4 +15,3 @@ public class Bullet : MonoBehaviour
         Destroy(gameObject);
     }
 }
-#endif

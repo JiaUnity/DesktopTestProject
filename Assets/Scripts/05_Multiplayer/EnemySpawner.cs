@@ -1,17 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-#if UNITY_2019_1_OR_NEWER
-public class EnemySpawner : MonoBehaviour
-{
-    void Start()
-    {
-        enabled = false;
-    }
-}
-#else
 public class EnemySpawner : NetworkBehaviour
 {
     public GameObject m_enemyPrefab;
@@ -34,4 +23,3 @@ public class EnemySpawner : NetworkBehaviour
         }
     }
 }
-#endif

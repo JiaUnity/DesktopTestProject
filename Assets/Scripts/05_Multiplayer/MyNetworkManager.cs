@@ -6,17 +6,6 @@ using UnityEngine.Networking.Match;
 using UnityEngine.Networking.Types;
 using UnityEngine.UI;
 
-#if UNITY_2019_1_OR_NEWER
-public class MyNetworkManager : MonoBehaviour
-{
-    void Start()
-    {
-        enabled = false;
-    }
-}
-
-
-#else
 public class MyNetworkManager : NetworkManager
 {
     public static MyNetworkManager instance = null;
@@ -144,4 +133,3 @@ public class MyNetworkManager : NetworkManager
         }
     }
 }
-#endif

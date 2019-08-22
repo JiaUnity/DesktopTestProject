@@ -8,11 +8,7 @@ using UnityEngine;
 #if UNITY_EDITOR
 [InitializeOnLoad]
 [CustomEditor(typeof(SceneSelect))]
-#if UNITY_2018_1_OR_NEWER
 public class GetSceneListBeforeBuild : Editor, IPreprocessBuildWithReport, IPostprocessBuildWithReport
-#else
-public class GetSceneListBeforeBuild : Editor, IPreprocessBuild, IPostprocessBuild
-#endif
 {
     // Get scene list before entering Playmode
     static GetSceneListBeforeBuild()
@@ -32,7 +28,6 @@ public class GetSceneListBeforeBuild : Editor, IPreprocessBuild, IPostprocessBui
     // Get scene list before building Player
     public int callbackOrder { get { return 0; } }
 
-#if UNITY_2018_1_OR_NEWER
     public void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report)
     {
         SetSceneListAsAsset();
@@ -42,19 +37,6 @@ public class GetSceneListBeforeBuild : Editor, IPreprocessBuild, IPostprocessBui
     {
         SetSceneListUpdated(false);
     }
-
-#else
-    public void OnPreprocessBuild(BuildTarget target, string path)
-    {
-        SetSceneListAsAsset();
-    }
-
-    public void OnPostprocessBuild(BuildTarget target, string path)
-    {
-        SetSceneListUpdated(false);
-    }
-
-#endif
 
     private static void SetSceneListAsAsset()
     {

@@ -3,15 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-#if UNITY_2019_1_OR_NEWER
-public class PlayerController : MonoBehaviour
-{
-    void Start()
-    {
-        enabled = false;
-    }
-}
-#else
 public class PlayerController : NetworkBehaviour
 {
     public GameObject m_bulletPrefab;
@@ -66,4 +57,3 @@ public class PlayerController : NetworkBehaviour
         Destroy(bullet, 2f);
     }
 }
-#endif
