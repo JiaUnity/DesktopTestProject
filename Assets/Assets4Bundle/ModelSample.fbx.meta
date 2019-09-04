@@ -1,25 +1,21 @@
 fileFormatVersion: 2
-guid: c667bed38e4fefc4ba62fdc7d70d1fb7
+guid: 1c60c71d0b34446489d10433148c747c
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
     100000: //RootNode
     400000: //RootNode
+    2100000: projectionTest1
     2300000: //RootNode
     3300000: //RootNode
     4300000: polySurface1
     11100000: //RootNode
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: projectionTest1
-    second: {fileID: 2100000, guid: 02bb26726dcdce64daea95b7dbcb956a, type: 2}
+  externalObjects: {}
   materials:
     importMaterials: 1
-    materialName: 3
+    materialName: 0
     materialSearch: 1
-    materialLocation: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 3
     bakeSimulation: 0
@@ -98,5 +94,5 @@ ModelImporter:
   humanoidOversampling: 1
   additionalBone: 1
   userData: 
-  assetBundleName: 
+  assetBundleName: bundle4test
   assetBundleVariant: 

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: d09fe237b2321674490f7200e31a018e
+guid: 8ee4f3e99d4ef554ea2f892d6780d0e5
 TextureImporter:
   fileIDToRecycleName: {}
   externalObjects: {}
@@ -128,5 +128,5 @@ TextureImporter:
   pSDRemoveMatte: 1
   pSDShowRemoveMatteOption: 1
   userData: 
-  assetBundleName: 
+  assetBundleName: bundle4test
   assetBundleVariant: 

@@ -1,24 +1,57 @@
 ManifestFileVersion: 0
-CRC: 1721660379
+CRC: 4290811703
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 8b3fb34a1341b026ad419b7b76696757
+    Hash: 619dfa0c78dea7d4fb7121e4765c60e6
   TypeTreeHash:
     serializedVersion: 2
-    Hash: cfcb18d5c2eb967a34e14942efc353ab
+    Hash: ac00f730919185ab190af8d9eff928ff
 HashAppended: 0
 ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
 - Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
   Script: {instanceID: 0}
 - Class: 49
   Script: {instanceID: 0}
 - Class: 83
   Script: {instanceID: 0}
+- Class: 111
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 2daaefa1e5096a342842862a13af1f39, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 128
+  Script: {instanceID: 0}
+- Class: 135
+  Script: {instanceID: 0}
 - Class: 213
   Script: {instanceID: 0}
 Assets:
 - Assets/Prefabs/Assets4Bundle/AudioSample.mp3
+- Assets/Assets4Bundle/Spinning Cube.prefab
+- Assets/Assets4Bundle/TextDoc.txt
 - Assets/Prefabs/Assets4Bundle/Texture.png
+- Assets/Assets4Bundle/MaterialSample.mat
+- Assets/Assets4Bundle/ProjectionShard.psd
 - Assets/Prefabs/Assets4Bundle/TextDoc.txt
+- Assets/Assets4Bundle/AudioSample.mp3
+- Assets/Assets4Bundle/ModelSample.fbx
+- Assets/Assets4Bundle/Additive.shader
+- Assets/Assets4Bundle/Texture.png
+- Assets/Assets4Bundle/coolvetica.ttf
 Dependencies: []

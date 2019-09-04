@@ -3,25 +3,28 @@ using UnityEditor;
 
 public class CreateAssetBundle
 {
-    [MenuItem("Tools/Build AssetBundlers/Windows", false, 2)]
-    static void BuildAssetBundleWindows()
-    {
-        BuildPipeline.BuildAssetBundles("AssetBundles/Windows", BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);
-    }
+    private static string bundleSavePath = "Assets/StreamingAssets/AssetBundles/";
 
-    [MenuItem("Tools/Build AssetBundlers/MacOS", false, 2)]
-    static void BuildAssetBundleMacOS()
+    [MenuItem("Tools/Build AssetBundlers/Standalone", false, 2)]
+    static void BuildAssetBundleStandalone()
     {
-#if UNITY_2017_3_OR_NEWER
-        BuildPipeline.BuildAssetBundles("AssetBundles/MacOS", BuildAssetBundleOptions.None, BuildTarget.StandaloneOSX);
-#else
-        BuildPipeline.BuildAssetBundles("AssetBundles/MacOS", BuildAssetBundleOptions.None, BuildTarget.StandaloneOSXUniversal);
+#if UNITY_EDITOR_WIN
+        OnBuildAssetBundle(bundleSavePath + "Standalone", BuildTarget.StandaloneWindows);
+#elif UNITY_EDITOR_OSX
+        OnBuildAssetBundle(bundleSavePath + "Standalone", BuildTarget.StandaloneOSX);
+#elif UNITY_EDITOR_LINUX
+        OnBuildAssetBundle(bundleSavePath + "Standalone", BuildTarget.StandaloneLinux64);
 #endif
     }
 
     [MenuItem("Tools/Build AssetBundlers/UWP", false, 2)]
     static void BuildAssetBundleUWP()
     {
-        BuildPipeline.BuildAssetBundles("AssetBundles/UWP", BuildAssetBundleOptions.None, BuildTarget.WSAPlayer);
+        OnBuildAssetBundle(bundleSavePath + "UWP", BuildTarget.WSAPlayer);
+    }
+
+    private static void OnBuildAssetBundle(string path, BuildTarget target)
+    {
+        BuildPipeline.BuildAssetBundles(path, BuildAssetBundleOptions.ForceRebuildAssetBundle, target);
     }
 }
