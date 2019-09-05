@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1686327305
+CRC: 15852986
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: fc7e69d0e02c453653ca1d1e6d01137e
+    Hash: 0e892efdd0a44e56ab9fcf6f23337fba
   TypeTreeHash:
     serializedVersion: 2
     Hash: ac00f730919185ab190af8d9eff928ff
@@ -42,16 +42,13 @@ ClassTypes:
 - Class: 213
   Script: {instanceID: 0}
 Assets:
-- Assets/Prefabs/Assets4Bundle/AudioSample.mp3
 - Assets/Assets4Bundle/Spinning Cube.prefab
 - Assets/Assets4Bundle/TextDoc.txt
-- Assets/Prefabs/Assets4Bundle/Texture.png
 - Assets/Assets4Bundle/MaterialSample.mat
 - Assets/Assets4Bundle/ProjectionShard.psd
-- Assets/Prefabs/Assets4Bundle/TextDoc.txt
 - Assets/Assets4Bundle/AudioSample.mp3
 - Assets/Assets4Bundle/ModelSample.fbx
-- Assets/Assets4Bundle/Additive.shader
+- Assets/Assets4Bundle/ShaderSample.shader
 - Assets/Assets4Bundle/Texture.png
-- Assets/Assets4Bundle/coolvetica.ttf
+- Assets/Assets4Bundle/FontSample.ttf
 Dependencies: []

@@ -10,8 +10,9 @@ TrueTypeFontImporter:
   includeFontData: 1
   fontName: Coolvetica
   fontNames:
-  - Coolvetica
-  fallbackFontReferences: []
+  - FontSample
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 5002d98148138b348bd3e229a569fdb4, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1

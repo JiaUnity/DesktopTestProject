@@ -1,7 +1,7 @@
 // Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
 
-Shader "AngryBots/FX/Additive" {
+Shader "AssetBundle/ShaderSample" {
     Properties {
         _MainTex ("Base", 2D) = "white" {}
         _TintColor ("TintColor", Color) = (1.0, 1.0, 1.0, 1.0)

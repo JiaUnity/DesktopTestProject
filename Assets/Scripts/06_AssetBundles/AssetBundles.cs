@@ -29,11 +29,7 @@ public class AssetBundles : MonoBehaviour
 
     [Header("Load via URL")]
     private string m_url;
-#if UNITY_2018_3_OR_NEWER
     private UnityWebRequest m_webRequest;
-#else
-    private WWW m_www;
-#endif
 
 
     void Start()
@@ -61,13 +57,8 @@ public class AssetBundles : MonoBehaviour
     {
         if (is_loading)
         {
-#if UNITY_2018_3_OR_NEWER
             m_loadingText.text = "Loading.. " + (m_webRequest.downloadProgress * 100f).ToString("F0") + "%";
             m_progressBar.value = m_webRequest.downloadProgress;
-#else
-            m_loadingText.text = "Loading.. " + (m_www.progress * 100f).ToString("F0") + "%";
-            m_progressBar.value = m_www.progress;
-#endif
         }
         // To disable input during loading.
         else
@@ -107,7 +98,6 @@ public class AssetBundles : MonoBehaviour
         m_mainMenu.SetActive(false);
         m_progressBar.gameObject.SetActive(true);
 
-#if UNITY_2018_3_OR_NEWER
         using (m_webRequest = UnityWebRequestAssetBundle.GetAssetBundle(m_url))
         {
             yield return m_webRequest.SendWebRequest();
@@ -122,24 +112,6 @@ public class AssetBundles : MonoBehaviour
             else
                 m_assetBundle = DownloadHandlerAssetBundle.GetContent(m_webRequest);
         }
-
-#else
-        using (m_www = new WWW(m_url))
-        {
-            yield return m_www;
-
-            is_loading = false;
-            if (!string.IsNullOrEmpty(m_www.error))
-            {
-                Debug.LogError(m_www.error);
-                Reset();
-                yield break;
-            }
-            else
-                m_assetBundle = m_www.assetBundle;
-        }
-
-#endif
         StartCoroutine("RetrieveAssets");
     }
 
@@ -153,7 +125,6 @@ public class AssetBundles : MonoBehaviour
 
         byte[] bundleData = null;
 
-#if UNITY_2018_3_OR_NEWER
         using (m_webRequest = UnityWebRequest.Get(m_url))
         {
             yield return m_webRequest.SendWebRequest();
@@ -169,22 +140,6 @@ public class AssetBundles : MonoBehaviour
                 bundleData = m_webRequest.downloadHandler.data;
         }
 
-#else
-        using (m_www = new WWW(m_url))
-        {
-            yield return m_www;
-
-            is_loading = false;
-            if (!string.IsNullOrEmpty(m_www.error))
-            {
-                Debug.LogError(m_www.error);
-                Reset();
-                yield break;
-            }
-            else
-                bundleData = m_www.bytes;
-        }
-#endif
         AssetBundleCreateRequest acr = AssetBundle.LoadFromMemoryAsync(bundleData);
         yield return acr;
 
@@ -198,7 +153,7 @@ public class AssetBundles : MonoBehaviour
         m_progressBar.gameObject.SetActive(false);
 
         TextAsset retrievedText = m_assetBundle.LoadAsset("TextDoc", typeof(TextAsset)) as TextAsset;
-        Font retrievedFont = m_assetBundle.LoadAsset("coolvetica", typeof(Font)) as Font;
+        Font retrievedFont = m_assetBundle.LoadAsset("FontSample", typeof(Font)) as Font;
         yield return retrievedText;
         yield return retrievedFont;
         m_textObject.text = retrievedText.text;
@@ -216,7 +171,7 @@ public class AssetBundles : MonoBehaviour
 
         Mesh retrievedModel = m_assetBundle.LoadAsset("ModelSample", typeof(Mesh)) as Mesh;
         Material retrievedMaterial = m_assetBundle.LoadAsset("MaterialSample", typeof(Material)) as Material;
-        Shader retrievedShader = m_assetBundle.LoadAsset("Additive", typeof(Shader)) as Shader;
+        Shader retrievedShader = m_assetBundle.LoadAsset("ShaderSample", typeof(Shader)) as Shader;
         yield return retrievedModel;
         yield return retrievedMaterial;
         yield return retrievedShader;
