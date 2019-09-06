@@ -37,9 +37,15 @@ public class AssetBundles : MonoBehaviour
         //m_defaultText = m_textObject.text;
         //m_defaultTexture = m_textureObject.material.mainTexture;
 
-#if UNITY_EDITOR || UNITY_STANDALONE
-        m_localPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles/Standalone/", m_localPath);
-        m_url = "https://oc.unity3d.com/index.php/s/p7MR0czK5ScIIlh/download";
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+        m_localPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles/Windows/", m_localPath);
+        m_url = "https://oc.unity3d.com/index.php/s/McFR6oDRatgzB4k/download";
+#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+        m_localPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles/OSX/", m_localPath);
+        m_url = "https://oc.unity3d.com/index.php/s/lFyYSOwpjISxw4x/download";
+#elif UNITY_EDITOR_LINUX || UNITY_STANDALONE_LINUX
+        m_localPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles/Linux/", m_localPath);
+        m_url = "https://oc.unity3d.com/index.php/s/OOE4EVE4S9tcXVJ/download";
 #elif UNITY_WSA
         m_localPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles/UWP/", m_localPath);
         m_url = "https://oc.unity3d.com/index.php/s/TN7FUbL4kjqbnmQ/download";

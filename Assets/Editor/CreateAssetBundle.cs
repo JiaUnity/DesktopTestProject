@@ -1,20 +1,25 @@
-using UnityEngine;
 using UnityEditor;
 
 public class CreateAssetBundle
 {
     private static string bundleSavePath = "Assets/StreamingAssets/AssetBundles/";
 
-    [MenuItem("Tools/Build AssetBundlers/Standalone", false, 2)]
-    static void BuildAssetBundleStandalone()
+    [MenuItem("Tools/Build AssetBundlers/Windows", false, 2)]
+    static void BuildAssetBundleWindows()
     {
-#if UNITY_EDITOR_WIN
-        OnBuildAssetBundle(bundleSavePath + "Standalone", BuildTarget.StandaloneWindows);
-#elif UNITY_EDITOR_OSX
-        OnBuildAssetBundle(bundleSavePath + "Standalone", BuildTarget.StandaloneOSX);
-#elif UNITY_EDITOR_LINUX
-        OnBuildAssetBundle(bundleSavePath + "Standalone", BuildTarget.StandaloneLinux64);
-#endif
+        OnBuildAssetBundle(bundleSavePath + "Windows", BuildTarget.StandaloneWindows);
+    }
+
+    [MenuItem("Tools/Build AssetBundlers/OSX", false, 2)]
+    static void BuildAssetBundleOSX()
+    {
+        OnBuildAssetBundle(bundleSavePath + "OSX", BuildTarget.StandaloneOSX);
+    }
+
+    [MenuItem("Tools/Build AssetBundlers/Linux", false, 2)]
+    static void BuildAssetBundleLinux()
+    {
+        OnBuildAssetBundle(bundleSavePath + "Linux", BuildTarget.StandaloneLinux64);
     }
 
     [MenuItem("Tools/Build AssetBundlers/UWP", false, 2)]

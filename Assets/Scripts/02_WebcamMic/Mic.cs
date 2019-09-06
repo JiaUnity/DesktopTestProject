@@ -26,8 +26,8 @@ public class Mic : MonoBehaviour
         // initialize mic
         audio_source = GetComponent<AudioSource>();
         mic_select_menu.onValueChanged.AddListener(delegate {
-                SwitchToMic(mic_select_menu.captionText.text);
-            });
+            SwitchToMic(mic_select_menu.captionText.text);
+        });
 
         RefreshMicSetup();
     }

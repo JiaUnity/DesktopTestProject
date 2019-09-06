@@ -18,7 +18,7 @@ public class PresetTwo : MonoBehaviour
         text.text += "Launch for the first time:\n";
         text.text += "1. Player window launches in <color=brown>Windowed Mode</color>.\n";
         text.text += "2. Resolution Dialog <color=brown>did not appear</color>.\n";
-        text.text += "3. Player window resolution should be 1024x768. Launch: <color=brown>" + Screen.width + "x" + Screen.height + "</color>.\n";         
+        text.text += "3. Player window resolution should be 1024x768. Launch: <color=brown>" + Screen.width + "x" + Screen.height + "</color>.\n";
 
 #if UNITY_STANDALONE_OSX
         text.text += "4. Player window <color=brown>cannot</color> be resized.\n";
@@ -31,7 +31,7 @@ public class PresetTwo : MonoBehaviour
         text.text += "10. The <color=brown>highest resolution</color> choice in the Dialog is 1920 x 1200.\n";
 #else
         text.text += "4. Player window <color=brown>cannot</color> be resized. The \"Maximize\" button is greyed out.\n";
-        text.text += "5. Player window <color=brown>cannot</color> swtich to fullscreen (Alt + Enter, etc.)\n";        
+        text.text += "5. Player window <color=brown>cannot</color> swtich to fullscreen (Alt + Enter, etc.)\n";
         text.text += "6. <color=brown>Do not</color> close this Player and launch another one with <color=brown>Shift key down</color>.\n\n";
         text.text += "For the second Player window:\n";
         text.text += "7. Resolution Dialog <color=brown>appears</color>.\n";

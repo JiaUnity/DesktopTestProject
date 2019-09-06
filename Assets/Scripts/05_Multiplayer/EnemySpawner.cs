@@ -11,10 +11,10 @@ public class EnemySpawner : NetworkBehaviour
         for (int i = 0; i < m_enemyNumber; i++)
         {
             Vector3 spawnPosition = new Vector3(
-                    Random.Range(-8f, 8f),
-                    0f,
-                    Random.Range(-8f, 8f)
-                    );
+                Random.Range(-8f, 8f),
+                0f,
+                Random.Range(-8f, 8f)
+            );
 
             Quaternion spawnRotation = Quaternion.Euler(0f, Random.Range(0, 180), 0f);
 

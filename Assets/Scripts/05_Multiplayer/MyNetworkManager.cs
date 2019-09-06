@@ -78,8 +78,8 @@ public class MyNetworkManager : NetworkManager
         m_inGameMenu.SetActive(true);
 
         m_networkInfoText.text = matchName + "\n"
-                               + matchInfo.address + "\n" 
-                               + (m_isHost ? "Hosting" : "Connected");
+            + matchInfo.address + "\n"
+            + (m_isHost ? "Hosting" : "Connected");
     }
 
     //------ Overriden Network Manager functions --------
