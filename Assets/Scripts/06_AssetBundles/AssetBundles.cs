@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using System.Collections;
 using System.IO;
 
@@ -9,57 +11,50 @@ public class AssetBundles : MonoBehaviour
     public TextMesh m_textObject;
     public Renderer m_textureObject;
     public AudioSource m_audioObject;
+    public GameObject m_modelObject;
 
     [Header("UI Objects")]
     public GameObject m_mainMenu;
     public GameObject m_resetMenu;
-    public GameObject m_progressBar;
+    public Slider m_progressBar;
 
-    private Transform m_loadingBar;
-    private TextMesh m_loadingText;
-
-    private string m_defaultText;
-    private Texture m_defaultTexture;
+    private Text m_loadingText;
 
     private AssetBundle m_assetBundle;
     private bool is_loaded = false;
     private bool is_loading = false;
 
     [Header("Load via Local Path")]
-    private string m_bundleName;
-    private string m_localPath;
+    public string m_localPath = "bundle4test";
 
     [Header("Load via URL")]
     private string m_url;
-
-#if UNITY_2018_3_OR_NEWER
     private UnityWebRequest m_webRequest;
-#else
-    private WWW m_www;
-#endif
 
 
     void Start()
     {
-        m_defaultText = m_textObject.text;
-        m_defaultTexture = m_textureObject.material.mainTexture;
+        //m_defaultText = m_textObject.text;
+        //m_defaultTexture = m_textureObject.material.mainTexture;
 
-        m_bundleName = "bundle4test";
-
-#if UNITY_EDITOR || UNITY_STANDALONE
-        m_localPath = Application.streamingAssetsPath + "/AssetBundles/Standalone/";
-        m_url = "https://oc.unity3d.com/index.php/s/zQetrIunhA6sAoz/download";
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+        m_localPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles/Windows/", m_localPath);
+        m_url = "https://oc.unity3d.com/index.php/s/McFR6oDRatgzB4k/download";
+#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+        m_localPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles/OSX/", m_localPath);
+        m_url = "https://oc.unity3d.com/index.php/s/lFyYSOwpjISxw4x/download";
+#elif UNITY_EDITOR_LINUX || UNITY_STANDALONE_LINUX
+        m_localPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles/Linux/", m_localPath);
+        m_url = "https://oc.unity3d.com/index.php/s/OOE4EVE4S9tcXVJ/download";
 #elif UNITY_WSA
-        m_localPath = Application.streamingAssetsPath + "/AssetBundles/UWP/";
-        m_url = "https://oc.unity3d.com/index.php/s/1HYxDqjFewONBnq/download";
+        m_localPath = Path.Combine(Application.streamingAssetsPath, "AssetBundles/UWP/", m_localPath);
+        m_url = "https://oc.unity3d.com/index.php/s/TN7FUbL4kjqbnmQ/download";
 #endif
-        m_localPath = Path.Combine(m_localPath, m_bundleName);
+        //m_localPath = Path.Combine(Application.streamingAssetsPath, m_localPath);
 
-        m_loadingBar = m_progressBar.transform.Find("Loading Bar");
-        m_loadingText = m_progressBar.GetComponentInChildren<TextMesh>();
+        m_loadingText = m_progressBar.GetComponentInChildren<Text>();
 
-        m_loadingBar.localScale = Vector3.zero;
-        m_progressBar.SetActive(false);
+        m_progressBar.gameObject.SetActive(false);
         m_resetMenu.SetActive(false);
         m_mainMenu.SetActive(true);
     }
@@ -68,14 +63,8 @@ public class AssetBundles : MonoBehaviour
     {
         if (is_loading)
         {
-#if UNITY_2018_3_OR_NEWER
             m_loadingText.text = "Loading.. " + (m_webRequest.downloadProgress * 100f).ToString("F0") + "%";
-            Vector3 progress = new Vector3(m_webRequest.downloadProgress, 1, 1);
-#else
-            m_loadingText.text = "Loading.. " + (m_www.progress * 100f).ToString("F0") + "%";
-            Vector3 progress = new Vector3(m_www.progress, 1, 1);
-#endif
-            m_loadingBar.localScale = Vector3.Lerp(m_loadingBar.localScale, progress, Time.deltaTime * 5f);
+            m_progressBar.value = m_webRequest.downloadProgress;
         }
         // To disable input during loading.
         else
@@ -97,7 +86,7 @@ public class AssetBundles : MonoBehaviour
         }
     }
 
-    public IEnumerator GetLocalBundle()
+    private IEnumerator GetLocalBundle()
     {
         is_loaded = true;
         m_mainMenu.SetActive(false);
@@ -108,14 +97,13 @@ public class AssetBundles : MonoBehaviour
         StartCoroutine("RetrieveAssets");
     }
 
-    public IEnumerator GetOnlineBundle()
+    private IEnumerator GetOnlineBundle()
     {
         is_loaded = true;
         is_loading = true;
         m_mainMenu.SetActive(false);
-        m_progressBar.SetActive(true);
+        m_progressBar.gameObject.SetActive(true);
 
-#if UNITY_2018_3_OR_NEWER
         using (m_webRequest = UnityWebRequestAssetBundle.GetAssetBundle(m_url))
         {
             yield return m_webRequest.SendWebRequest();
@@ -130,38 +118,19 @@ public class AssetBundles : MonoBehaviour
             else
                 m_assetBundle = DownloadHandlerAssetBundle.GetContent(m_webRequest);
         }
-
-#else
-        using (m_www = new WWW(m_url))
-        {
-            yield return m_www;
-
-            is_loading = false;
-            if (!string.IsNullOrEmpty(m_www.error))
-            {
-                Debug.LogError(m_www.error);
-                Reset();
-                yield break;
-            }
-            else
-                m_assetBundle = m_www.assetBundle;
-        }
-
-#endif
         StartCoroutine("RetrieveAssets");
     }
 
-    public IEnumerator GetOnlineBundleInBytes()
+    private IEnumerator GetOnlineBundleInBytes()
     {
         is_loaded = true;
         is_loading = true;
 
         m_mainMenu.SetActive(false);
-        m_progressBar.SetActive(true);
+        m_progressBar.gameObject.SetActive(true);
 
         byte[] bundleData = null;
 
-#if UNITY_2018_3_OR_NEWER
         using (m_webRequest = UnityWebRequest.Get(m_url))
         {
             yield return m_webRequest.SendWebRequest();
@@ -177,22 +146,6 @@ public class AssetBundles : MonoBehaviour
                 bundleData = m_webRequest.downloadHandler.data;
         }
 
-#else
-        using (m_www = new WWW(m_url))
-        {
-            yield return m_www;
-
-            is_loading = false;
-            if (!string.IsNullOrEmpty(m_www.error))
-            {
-                Debug.LogError(m_www.error);
-                Reset();
-                yield break;
-            }
-            else
-                bundleData = m_www.bytes;
-        }
-#endif
         AssetBundleCreateRequest acr = AssetBundle.LoadFromMemoryAsync(bundleData);
         yield return acr;
 
@@ -202,39 +155,58 @@ public class AssetBundles : MonoBehaviour
 
     IEnumerator RetrieveAssets()
     {
-        m_progressBar.SetActive(false);
+        m_resetMenu.SetActive(true);
+        m_progressBar.gameObject.SetActive(false);
 
         TextAsset retrievedText = m_assetBundle.LoadAsset("TextDoc", typeof(TextAsset)) as TextAsset;
+        Font retrievedFont = m_assetBundle.LoadAsset("FontSample", typeof(Font)) as Font;
         yield return retrievedText;
+        yield return retrievedFont;
         m_textObject.text = retrievedText.text;
-
+        m_textObject.GetComponent<MeshRenderer>().material = retrievedFont.material;
+        m_textObject.font = retrievedFont;
 
         Texture2D retrievedTexture = m_assetBundle.LoadAsset("Texture", typeof(Texture2D)) as Texture2D;
         yield return retrievedTexture;
         m_textureObject.material.mainTexture = retrievedTexture;
-
 
         AudioClip retrievedAudio = m_assetBundle.LoadAsset("AudioSample", typeof(AudioClip)) as AudioClip;
         yield return retrievedAudio;
         m_audioObject.clip = retrievedAudio;
         m_audioObject.Play();
 
-        m_resetMenu.SetActive(true);
+        Mesh retrievedModel = m_assetBundle.LoadAsset("ModelSample", typeof(Mesh)) as Mesh;
+        Material retrievedMaterial = m_assetBundle.LoadAsset("MaterialSample", typeof(Material)) as Material;
+        Shader retrievedShader = m_assetBundle.LoadAsset("ShaderSample", typeof(Shader)) as Shader;
+        yield return retrievedModel;
+        yield return retrievedMaterial;
+        yield return retrievedShader;
+        retrievedMaterial.shader = retrievedShader;
+        m_modelObject.GetComponent<MeshRenderer>().material = retrievedMaterial;
+        m_modelObject.GetComponent<MeshFilter>().mesh = retrievedModel;
+
+        GameObject retrievedPrefab = m_assetBundle.LoadAsset("Spinning Cube", typeof(GameObject)) as GameObject;
+        yield return retrievedPrefab;
+        Instantiate(retrievedPrefab);
+
         m_assetBundle.Unload(false);
     }
 
-    private void Reset()
+    public void Reset()
     {
-        m_textObject.text = m_defaultText;
-        m_textureObject.material.mainTexture = m_defaultTexture;
-        m_audioObject.Stop();
+        //m_textObject.text = m_defaultText;
+        //m_textureObject.material.mainTexture = m_defaultTexture;
+        //m_audioObject.Stop();
 
-        m_loadingText.text = string.Empty;
-        m_loadingBar.localScale = Vector3.zero;
+        //m_loadingText.text = string.Empty;
+        //m_loadingBar.localScale = Vector3.zero;
 
-        m_resetMenu.SetActive(false);
-        m_mainMenu.SetActive(true);
+        //m_resetMenu.SetActive(false);
+        //m_mainMenu.SetActive(true);
 
-        is_loaded = false;
+        //is_loaded = false;
+
+        Scene scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.name);
     }
 }

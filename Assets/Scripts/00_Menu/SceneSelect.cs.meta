@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 96885653b2f652d49a157f1957de2011
+timeCreated: 1517881202
+licenseType: Pro
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - buttonPrefab: {fileID: 169520, guid: d4e293d839611cf49bcd6f701f657176, type: 2}
+  - buttonsScrollRect: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
