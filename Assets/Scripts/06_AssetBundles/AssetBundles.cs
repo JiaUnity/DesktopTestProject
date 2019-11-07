@@ -178,11 +178,14 @@ public class AssetBundles : MonoBehaviour
         Mesh retrievedModel = m_assetBundle.LoadAsset("ModelSample", typeof(Mesh)) as Mesh;
         Material retrievedMaterial = m_assetBundle.LoadAsset("MaterialSample", typeof(Material)) as Material;
         Shader retrievedShader = m_assetBundle.LoadAsset("ShaderSample", typeof(Shader)) as Shader;
+        Texture2D projectionTexture = m_assetBundle.LoadAsset("ProjectionShard", typeof(Texture2D)) as Texture2D;
         yield return retrievedModel;
         yield return retrievedMaterial;
         yield return retrievedShader;
+        yield return projectionTexture;
         retrievedMaterial.shader = retrievedShader;
-        m_modelObject.GetComponent<MeshRenderer>().material = retrievedMaterial;
+        retrievedMaterial.mainTexture = projectionTexture;
+        m_modelObject.GetComponent<MeshRenderer>().sharedMaterial = retrievedMaterial;
         m_modelObject.GetComponent<MeshFilter>().mesh = retrievedModel;
 
         GameObject retrievedPrefab = m_assetBundle.LoadAsset("Spinning Cube", typeof(GameObject)) as GameObject;
