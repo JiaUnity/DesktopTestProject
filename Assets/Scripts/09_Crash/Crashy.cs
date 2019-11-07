@@ -1,20 +1,26 @@
 using UnityEngine;
+using UnityEngine.Diagnostics;
 
 
 public class Crashy : MonoBehaviour
 {
-    public void RaiseException()
+    public void AccessViolation()
     {
-        Application.ForceCrash(0);
+        Utils.ForceCrash(ForcedCrashCategory.AccessViolation);
     }
 
     public void AbortCrash()
     {
-        Application.ForceCrash(2);
+        Utils.ForceCrash(ForcedCrashCategory.Abort);
+    }
+
+    public void FatalError()
+    {
+        Utils.ForceCrash(ForcedCrashCategory.FatalError);
     }
 
     public void PureVirtual()
     {
-        Application.ForceCrash(3);
+        Utils.ForceCrash(ForcedCrashCategory.PureVirtualFunction);
     }
 }
