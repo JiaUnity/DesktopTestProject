@@ -1,101 +1,175 @@
-﻿using System.Net;
+﻿using Unity.Burst;
 using UnityEngine;
 using Unity.Networking.Transport;
 using Unity.Collections;
-using NetworkConnection = Unity.Networking.Transport.NetworkConnection;
-using UdpCNetworkDriver = Unity.Networking.Transport.BasicNetworkDriver<Unity.Networking.Transport.IPv4UDPSocket>;
 using Unity.Jobs;
+using UnityEngine.UI;
 
 public class MyPingClientBehavior : MonoBehaviour
 {
-    public UdpCNetworkDriver m_driver;
-    public NativeArray<NetworkConnection> m_connection;
-    public NativeArray<byte> m_isDone;
-    public JobHandle ClientJobHandle;    
+    struct PendingPing
+    {
+        public int id;
+        public float time;
+    }
+
+    private UdpNetworkDriver m_driver;
+    private NativeArray<NetworkConnection> m_connection;
+    // pendingPings is an array of pings sent to the server which have not yet received a response.
+    // Currently it only supports one ping in-flight
+    private NativeArray<PendingPing> m_pendingPings;
+    // The ping stats are two integers, time for last ping and number of pings
+    private NativeArray<int> m_pingStats;
+    // The EndPoint the ping client should ping, will be a non-created end point when ping should not run.
+    private NetworkEndPoint m_serverEndPoint;
+
+    private JobHandle m_updateHandle;
+
+    private string m_msg;
+    private string m_nextMsg;
+
+    public InputField m_clientOutput;
+    public Button m_pingButton;
+    
 
     // Start is called before the first frame update
     void Start()
     {
-        ushort port = 9000;
+        // Create a NetworkDriver for the client. We could bind to a specific address but in this case we rely on the
+        // implicit bind since we do not need to bing to anything special
+        m_driver = new UdpNetworkDriver(new INetworkParameter[0]);
 
-        m_driver = new UdpCNetworkDriver(new INetworkParameter[0]);
-        m_connection = new NativeArray<NetworkConnection>(1, Allocator.Persistent);
-        m_isDone = new NativeArray<byte>(1, Allocator.Persistent);
-
-        var endpoint = new IPEndPoint(IPAddress.Loopback, port);
-        m_connection[0] = m_driver.Connect(endpoint);
+        m_pendingPings = new NativeArray<PendingPing>(64, Allocator.Persistent);
+        m_pingStats = new NativeArray<int>(2, Allocator.Persistent);
+        m_connection = new NativeArray<NetworkConnection>(1, Allocator.Persistent); // Only support one ping in-flight like stated above
+        m_serverEndPoint = default;
     }
 
     void OnDestroy()
     {
-        ClientJobHandle.Complete();
-
+        // All jobs must be completed before we can dispose the data they use
+        m_updateHandle.Complete();
         m_driver.Dispose();
+        m_pendingPings.Dispose();
+        m_pingStats.Dispose();
         m_connection.Dispose();
-        m_isDone.Dispose();
     }
 
-    // Update is called once per frame
-    void Update()
+    [BurstCompile]
+    struct PingJob : IJob
     {
-        ClientJobHandle.Complete();
+        public UdpNetworkDriver driver;
+        public NativeArray<NetworkConnection> connection;
+        public NetworkEndPoint serverEndPoint;
+        public NativeArray<PendingPing> pendingPings;
+        public NativeArray<int> pingStats;
+        public float fixedTime;
 
-        var job = new ClientUpdateJob
+        public void Execute()
         {
-            driver = m_driver,
-            connection = m_connection,
-            isDone = m_isDone
-        };
+            // If endpoint shows pings should be sent but do not have an active connection, create one
+            if (serverEndPoint.IsValid && !connection[0].IsCreated)
+                connection[0] = driver.Connect(serverEndPoint);
 
-        ClientJobHandle = m_driver.ScheduleUpdate();
-        ClientJobHandle = job.Schedule(ClientJobHandle);
-    }
-}
-
-struct ClientUpdateJob: IJob
-{
-    public UdpCNetworkDriver driver;
-    public NativeArray<NetworkConnection> connection;
-    public NativeArray<byte> isDone;
-
-    public void Execute()
-    {
-        if (!connection[0].IsCreated)
-        {
-            if (isDone[0] != 1)
-                Debug.Log("Something went wrong during connection.");
-            return;
-        }
-
-        DataStreamReader stream;
-        NetworkEvent.Type cmd;
-        while ((cmd = connection[0].PopEvent(driver, out stream)) != NetworkEvent.Type.Empty)
-        {
-            if (cmd == NetworkEvent.Type.Connect)
+            // If endpoint shows no ping should be sent but there is an active connection, close it
+            if (!serverEndPoint.IsValid && connection[0].IsCreated)
             {
-                Debug.Log("we are now connected to the server.");
-
-                var value = 1;
-                using (var writer = new DataStreamWriter(4, Allocator.Temp))
-                {
-                    writer.Write(value);
-                    connection[0].Send(driver, writer);
-                }
-            }
-            else if (cmd == NetworkEvent.Type.Data)
-            {
-                var readerCtx = default(DataStreamReader.Context);
-                uint value = stream.ReadUInt(ref readerCtx);
-                Debug.Log("Got the value = " + value + " back from the server");
-                isDone[0] = 1;
                 connection[0].Disconnect(driver);
                 connection[0] = default;
             }
-            else if (cmd == NetworkEvent.Type.Disconnect)
+
+            DataStreamReader strm;
+            NetworkEvent.Type cmd;
+            // Process all events on the connection. If the connection is invalid it will return Empty immediately
+            while ((cmd = connection[0].PopEvent(driver, out strm)) != NetworkEvent.Type.Empty)
             {
-                Debug.Log("Client is disconnected from the server");
-                connection[0] = default;
+                // Once connected, start sending data to the server               
+                if (cmd == NetworkEvent.Type.Connect)
+                {
+                    // Set the ping id to a sequence number for the new ping we are about to send
+                    pendingPings[0] = new PendingPing
+                    {
+                        id = pingStats[0],
+                        time = fixedTime
+                    };
+                    // Create a 4 byte data stream to store the ping sequence number in
+                    var pingData = new DataStreamWriter(4, Allocator.Temp);
+                    pingData.Write(pingStats[0]);
+                    connection[0].Send(driver, pingData);
+                    // Update the number of sent pings
+                    pingStats[0] = pingStats[0] + 1;
+                }
+                // Once the message is received, calculate the ping time and disconnect from the server
+                else if (cmd == NetworkEvent.Type.Data)
+                {
+                    pingStats[1] = (int)((fixedTime - pendingPings[0].time) * 1000);
+                    connection[0].Disconnect(driver);
+                    connection[0] = default;                    
+                }
+                // Clear out connection if the server is disconnected
+                else if (cmd == NetworkEvent.Type.Disconnect)
+                    connection[0] = default;
             }
         }
+    }
+
+    private void LateUpdate()
+    {
+        // On fast clients each fixed update can have more than 4 frames, this call prevents warnings about TempJob allocation longer than 4 frames in those cases
+        m_updateHandle.Complete();
+    }
+
+    private void FixedUpdate()
+    {
+        // Wait for the previous frames ping to complete before starting a new one, the Complete in LateUpdate is not enough since there are multiple FixedUpdate per frame on slow clients
+        m_updateHandle.Complete();
+
+        if (m_pingStats[1] > 0)
+            m_nextMsg = "<color=green>Ping " + m_pingStats[0] + " receives reponse from Server. Time: " + m_pingStats[1] + "ms</color>";
+
+        // Update the ping statistics computed by the job scheduled previous frame since that is now guaranteed to have completed
+        var pingJob = new PingJob {
+            driver = m_driver,
+            connection = m_connection,
+            pendingPings = m_pendingPings,
+            pingStats = m_pingStats,
+            fixedTime = Time.fixedTime,
+            serverEndPoint = m_serverEndPoint
+        };
+
+        m_updateHandle = m_driver.ScheduleUpdate();
+        m_updateHandle = pingJob.Schedule(m_updateHandle);
+    }
+
+    private void Update()
+    {
+        m_pingButton.GetComponentInChildren<Text>().text = m_serverEndPoint.IsValid ? "Stop" : "Start";
+        if (m_nextMsg != m_msg)
+        {
+            m_msg = m_nextMsg;
+            ShowMessage();
+        }
+    }
+
+    public void OnTogglePing()
+    {
+        if (m_serverEndPoint.IsValid)
+        {
+            m_serverEndPoint = default;
+            m_nextMsg = "<color=blue>Stop Ping.</color>";
+        }            
+        else
+        {
+            var endpoint = NetworkEndPoint.LoopbackIpv4;
+            endpoint.Port = 9000;
+            m_serverEndPoint = endpoint;
+            m_nextMsg = "<color=blue>Start Ping.</color>";
+        }
+    }
+
+    private void ShowMessage()
+    {
+        m_clientOutput.text += m_msg + "\n";
+        Debug.Log(m_msg);
     }
 }
