@@ -1,17 +1,13 @@
 ﻿using System.Net;
 using UnityEngine;
-
-#if UNITY_2019_1_OR_NEWER
 using Unity.Networking.Transport;
 using Unity.Collections;
 using NetworkConnection = Unity.Networking.Transport.NetworkConnection;
 using UdpCNetworkDriver = Unity.Networking.Transport.BasicNetworkDriver<Unity.Networking.Transport.IPv4UDPSocket>;
 using Unity.Jobs;
-#endif
 
 public class MyPingClientBehavior : MonoBehaviour
 {
-#if UNITY_2019_1_OR_NEWER
     public UdpCNetworkDriver m_driver;
     public NativeArray<NetworkConnection> m_connection;
     public NativeArray<byte> m_isDone;
@@ -102,5 +98,4 @@ struct ClientUpdateJob: IJob
             }
         }
     }
-#endif
 }

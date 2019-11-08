@@ -20,16 +20,7 @@ public class ResolutionSettings : MonoBehaviour
         if (!SwitchSceneIfOkay())
             return;
 
-#if UNITY_2018_1_OR_NEWER
         PlayerSettings.fullScreenMode = FullScreenMode.Windowed;
-#else
-        PlayerSettings.defaultIsFullScreen = false;
-        PlayerSettings.macFullscreenMode = MacFullscreenMode.FullscreenWindowWithDockAndMenuBar;
-#if !UNITY_2017_3_OR_NEWER
-        PlayerSettings.d3d9FullscreenMode = D3D9FullscreenMode.FullscreenWindow;
-#endif
-        PlayerSettings.d3d11FullscreenMode = D3D11FullscreenMode.FullscreenWindow;
-#endif
 
         PlayerSettings.defaultIsNativeResolution = false;
         PlayerSettings.defaultScreenWidth = 1024;
@@ -59,19 +50,10 @@ public class ResolutionSettings : MonoBehaviour
         if (!SwitchSceneIfOkay())
             return;
 
-#if UNITY_2018_1_OR_NEWER
-    #if UNITY_EDITOR_OSX
+#if UNITY_EDITOR_OSX
         PlayerSettings.fullScreenMode = FullScreenMode.FullScreenWindow;
-    #else
-        PlayerSettings.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
-    #endif
 #else
-        PlayerSettings.defaultIsFullScreen = true;
-        PlayerSettings.macFullscreenMode = MacFullscreenMode.FullscreenWindow;
-    #if !UNITY_2017_3_OR_NEWER
-        PlayerSettings.d3d9FullscreenMode = D3D9FullscreenMode.ExclusiveMode;
-    #endif
-        PlayerSettings.d3d11FullscreenMode = D3D11FullscreenMode.ExclusiveMode;
+        PlayerSettings.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
 #endif
 
         PlayerSettings.defaultIsNativeResolution = true;
@@ -101,16 +83,7 @@ public class ResolutionSettings : MonoBehaviour
         if (!SwitchSceneIfOkay())
             return;
 
-#if UNITY_2018_1_OR_NEWER
         PlayerSettings.fullScreenMode = FullScreenMode.Windowed;
-#else
-        PlayerSettings.defaultIsFullScreen = false;
-        PlayerSettings.macFullscreenMode = MacFullscreenMode.FullscreenWindowWithDockAndMenuBar;
-    #if !UNITY_2017_3_OR_NEWER
-        PlayerSettings.d3d9FullscreenMode = D3D9FullscreenMode.FullscreenWindow;
-    #endif
-        PlayerSettings.d3d11FullscreenMode = D3D11FullscreenMode.FullscreenWindow;
-#endif
 
         PlayerSettings.defaultIsNativeResolution = false;
         PlayerSettings.defaultScreenWidth = 1024;
@@ -141,21 +114,10 @@ public class ResolutionSettings : MonoBehaviour
         if (!SwitchSceneIfOkay())
             return;
 
-#if UNITY_2018_1_OR_NEWER
-
-    #if UNITY_EDITOR_OSX
+#if UNITY_EDITOR_OSX
         PlayerSettings.fullScreenMode = FullScreenMode.MaximizedWindow;
-    #else
-        PlayerSettings.fullScreenMode = FullScreenMode.FullScreenWindow;
-    #endif
-
 #else
-        PlayerSettings.defaultIsFullScreen = false;
-        PlayerSettings.macFullscreenMode = MacFullscreenMode.FullscreenWindowWithDockAndMenuBar;
-    #if !UNITY_2017_3_OR_NEWER
-        PlayerSettings.d3d9FullscreenMode = D3D9FullscreenMode.FullscreenWindow;
-    #endif
-        PlayerSettings.d3d11FullscreenMode = D3D11FullscreenMode.FullscreenWindow;
+        PlayerSettings.fullScreenMode = FullScreenMode.FullScreenWindow;
 #endif
         
         PlayerSettings.defaultIsNativeResolution = false;

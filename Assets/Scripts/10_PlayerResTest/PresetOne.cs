@@ -22,9 +22,7 @@ public class PresetOne : MonoBehaviour
 
 #if UNITY_STANDALONE_OSX
         text.text += "5. Player window <color=brown>can</color> swtich to windowed mode (Command + F, Green Dot, etc.)\n";
-//#if !UNITY_2018_1_OR_NEWER
         text.text += "6. Dock and Menu Bar <color=brown>do not appear</color> when cursor is at the edge.\n";
-//#endif
 #else
         text.text += "5. Player window <color=brown>can</color> swtich to windowed mode (Alt + Enter, etc,) and the screen flickers during the process.\n";
         text.text += "6. A second Player instance <color=brown>does not start</color> (mouse click, press Enter, etc.)";

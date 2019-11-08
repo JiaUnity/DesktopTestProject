@@ -19,11 +19,7 @@ public class FreeCam : MonoBehaviour
     void Start()
     {
 #if UNITY_EDITOR
-#if UNITY_5_3_OR_NEWER
         Cursor.lockState = CursorLockMode.Locked;
-#else
-        Screen.lockCursor = true;
-#endif
 #endif
     }
 

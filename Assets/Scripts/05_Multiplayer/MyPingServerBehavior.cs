@@ -1,17 +1,14 @@
 ﻿using System.Net;
 using UnityEngine;
-#if UNITY_2018_3_OR_NEWER
 using Unity.Networking.Transport;
 using Unity.Collections;
 using NetworkConnection = Unity.Networking.Transport.NetworkConnection;
 using UdpCNetworkDriver = Unity.Networking.Transport.BasicNetworkDriver<Unity.Networking.Transport.IPv4UDPSocket>;
 using Unity.Jobs;
 using UnityEngine.Assertions;
-#endif
 
 public class MyPingServerBehavior : MonoBehaviour
 {
-#if UNITY_2019_1_OR_NEWER
     public UdpCNetworkDriver m_driver;
     public NativeList<NetworkConnection> m_connections;
     private JobHandle ServerJobHandle;
@@ -55,11 +52,7 @@ public class MyPingServerBehavior : MonoBehaviour
 
         ServerJobHandle = m_driver.ScheduleUpdate();
         ServerJobHandle = connectionJob.Schedule(ServerJobHandle);
-#if UNITY_2018_3_OR_NEWER
         ServerJobHandle = serverUpdateJob.Schedule(m_connections.Length, 1, ServerJobHandle);
-#else
-        ServerJobHandle = serverUpdateJob.Schedule(m_connections, 1, ServerJobHandle);
-#endif
     }
 }
 
@@ -155,5 +148,4 @@ struct ServerUpdateConnectionJob : IJob
             }
         }
     }
-#endif
 }
