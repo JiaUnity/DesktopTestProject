@@ -9,8 +9,10 @@ public class MyPingServerBehavior : MonoBehaviour
 {
     public UdpNetworkDriver m_driver;
     public NativeList<NetworkConnection> m_connections;
-
+    private NativeArray<int> m_id;
     private JobHandle m_updateHandle;
+
+    private int m_currentID = 0;
 
     public InputField m_serverOutput;
 
@@ -28,6 +30,7 @@ public class MyPingServerBehavior : MonoBehaviour
             m_driver.Listen();
 
         m_connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
+        m_id = new NativeArray<int>(1, Allocator.Persistent);
     }
 
     void OnDestroy()
@@ -35,6 +38,7 @@ public class MyPingServerBehavior : MonoBehaviour
         m_updateHandle.Complete();
         m_driver.Dispose();
         m_connections.Dispose();
+        m_id.Dispose();
     }
 
     [BurstCompile]
@@ -73,11 +77,16 @@ public class MyPingServerBehavior : MonoBehaviour
     {
         public UdpNetworkDriver.Concurrent driver;
         public NativeList<NetworkConnection> connections;
+        public NativeArray<int> id;
 
         public void Execute()
         {
+            int idFromData = 0;
             for (int i = 0; i < connections.Length; i++)
-                connections[i] = ProcessSingleConnection(driver, connections[i]);
+            {
+                connections[i] = ProcessSingleConnection(driver, connections[i], out idFromData);
+                id[0] = idFromData;
+            }
         }
     }
 #else
@@ -85,18 +94,22 @@ public class MyPingServerBehavior : MonoBehaviour
     {
         public UdpNetworkDriver.Concurrent driver;
         public NativeArray<NetworkConnection> connections;
+        public NativeArray<int> id;
 
         public void Execute(int i)
         {
-            connections[i] = ProcessSingleConnection(driver, connections[i]);
+            int idFromData = 0;
+            connections[i] = ProcessSingleConnection(driver, connections[i], out idFromData);
+            id[0] = idFromData;
         }
     }
 #endif
 
-    static NetworkConnection ProcessSingleConnection(UdpNetworkDriver.Concurrent driver, NetworkConnection connection)
+    static NetworkConnection ProcessSingleConnection(UdpNetworkDriver.Concurrent driver, NetworkConnection connection, out int id)
     {
         DataStreamReader reader;
         NetworkEvent.Type cmd;
+        id = 0;
 
         // Pop all events for the connection
         while ((cmd = driver.PopEventForConnection(connection, out reader)) != NetworkEvent.Type.Empty)
@@ -106,7 +119,7 @@ public class MyPingServerBehavior : MonoBehaviour
             {
                 // A DataStreamReader.Context is required to keep track of current read position since DataStreamReader is immutable
                 var readerCtx = default(DataStreamReader.Context);
-                int id = reader.ReadInt(ref readerCtx);
+                id = reader.ReadInt(ref readerCtx);
 
                 // create a temporary DataStreamWriter to keep the serialized pong message
                 var pongData = new DataStreamWriter(4, Allocator.Temp);
@@ -132,6 +145,12 @@ public class MyPingServerBehavior : MonoBehaviour
     {
         m_updateHandle.Complete();
 
+        if (m_id[0] != m_currentID && m_id[0] != 0)
+        {
+            m_currentID = m_id[0];
+            ShowMessage("Ping " + m_currentID + " received and reponse sent.");
+        }
+
         // If at least one client is connected, update the activity so the server does not shut down
         if (m_connections.Length > 0)
             DedicatedServerConfig.UpdateLastActivity();
@@ -141,6 +160,7 @@ public class MyPingServerBehavior : MonoBehaviour
         };
         var pongJob = new PongJob {
             driver = m_driver.ToConcurrent(),
+            id = m_id,
 #if ENABLE_IL2CPP
             // IJobParallelForDeferExtensions is not working correctly with IL2CPP
             connections = m_connections
@@ -158,6 +178,12 @@ public class MyPingServerBehavior : MonoBehaviour
 #else
         m_updateHandle = pongJob.Schedule(m_connections, 1, m_updateHandle);
 #endif
+    }
+
+    private void ShowMessage(string msg)
+    {
+        m_serverOutput.text += msg + "\n";
+        Debug.Log(msg);
     }
 }
 

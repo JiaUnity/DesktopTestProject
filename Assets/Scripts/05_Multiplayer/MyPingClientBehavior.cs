@@ -25,8 +25,7 @@ public class MyPingClientBehavior : MonoBehaviour
 
     private JobHandle m_updateHandle;
 
-    private string m_msg;
-    private string m_nextMsg;
+    private int m_currentPingCount = 0;     // To show a message when a ping is responded
 
     public InputField m_clientOutput;
     public Button m_pingButton;
@@ -86,6 +85,8 @@ public class MyPingClientBehavior : MonoBehaviour
                 // Once connected, start sending data to the server               
                 if (cmd == NetworkEvent.Type.Connect)
                 {
+                    // Update the number of sent pings
+                    pingStats[0]++;
                     // Set the ping id to a sequence number for the new ping we are about to send
                     pendingPings[0] = new PendingPing
                     {
@@ -95,9 +96,7 @@ public class MyPingClientBehavior : MonoBehaviour
                     // Create a 4 byte data stream to store the ping sequence number in
                     var pingData = new DataStreamWriter(4, Allocator.Temp);
                     pingData.Write(pingStats[0]);
-                    connection[0].Send(driver, pingData);
-                    // Update the number of sent pings
-                    pingStats[0] = pingStats[0] + 1;
+                    connection[0].Send(driver, pingData);                    
                 }
                 // Once the message is received, calculate the ping time and disconnect from the server
                 else if (cmd == NetworkEvent.Type.Data)
@@ -124,8 +123,11 @@ public class MyPingClientBehavior : MonoBehaviour
         // Wait for the previous frames ping to complete before starting a new one, the Complete in LateUpdate is not enough since there are multiple FixedUpdate per frame on slow clients
         m_updateHandle.Complete();
 
-        if (m_pingStats[1] > 0)
-            m_nextMsg = "<color=green>Ping " + m_pingStats[0] + " receives reponse from Server. Time: " + m_pingStats[1] + "ms</color>";
+        if (m_pingStats[0] != m_currentPingCount && m_pingStats[1] > 0)
+        {
+            m_currentPingCount = m_pingStats[0];
+            ShowMessage("<color=green>Ping " + m_pingStats[0] + " receives reponse from Server. Time: " + m_pingStats[1] + "ms</color>");
+        }
 
         // Update the ping statistics computed by the job scheduled previous frame since that is now guaranteed to have completed
         var pingJob = new PingJob {
@@ -144,11 +146,6 @@ public class MyPingClientBehavior : MonoBehaviour
     private void Update()
     {
         m_pingButton.GetComponentInChildren<Text>().text = m_serverEndPoint.IsValid ? "Stop" : "Start";
-        if (m_nextMsg != m_msg)
-        {
-            m_msg = m_nextMsg;
-            ShowMessage();
-        }
     }
 
     public void OnTogglePing()
@@ -156,20 +153,20 @@ public class MyPingClientBehavior : MonoBehaviour
         if (m_serverEndPoint.IsValid)
         {
             m_serverEndPoint = default;
-            m_nextMsg = "<color=blue>Stop Ping.</color>";
+            ShowMessage("Stop Ping.");
         }            
         else
         {
             var endpoint = NetworkEndPoint.LoopbackIpv4;
             endpoint.Port = 9000;
             m_serverEndPoint = endpoint;
-            m_nextMsg = "<color=blue>Start Ping.</color>";
+            ShowMessage("Start Ping.");
         }
     }
 
-    private void ShowMessage()
+    private void ShowMessage(string msg)
     {
-        m_clientOutput.text += m_msg + "\n";
-        Debug.Log(m_msg);
+        m_clientOutput.text += msg + "\n";
+        Debug.Log(msg);
     }
 }
