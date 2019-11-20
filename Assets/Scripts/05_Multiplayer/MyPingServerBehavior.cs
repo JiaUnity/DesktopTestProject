@@ -1,151 +1,190 @@
-﻿using System.Net;
+﻿using Unity.Burst;
 using UnityEngine;
 using Unity.Networking.Transport;
 using Unity.Collections;
-using NetworkConnection = Unity.Networking.Transport.NetworkConnection;
-using UdpCNetworkDriver = Unity.Networking.Transport.BasicNetworkDriver<Unity.Networking.Transport.IPv4UDPSocket>;
 using Unity.Jobs;
-using UnityEngine.Assertions;
+using UnityEngine.UI;
 
 public class MyPingServerBehavior : MonoBehaviour
 {
-    public UdpCNetworkDriver m_driver;
+    public UdpNetworkDriver m_driver;
     public NativeList<NetworkConnection> m_connections;
-    private JobHandle ServerJobHandle;
+    private NativeArray<int> m_id;
+    private JobHandle m_updateHandle;
+
+    private int m_currentID = 0;
+
+    public InputField m_serverOutput;
 
     // Start is called before the first frame update
     void Start()
     {
-        m_connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
+        ushort port = 9000;
+        m_driver = new UdpNetworkDriver(new INetworkParameter[0]);
 
-        m_driver = new UdpCNetworkDriver(new INetworkParameter[0]);
-        ushort port = 9000;        
-        if (m_driver.Bind(new IPEndPoint(IPAddress.Any, port)) != 0)
+        var addr = NetworkEndPoint.AnyIpv4;
+        addr.Port = port;
+        if (m_driver.Bind(addr) != 0)
             Debug.Log("Failed to bind to port " + port);
         else
             m_driver.Listen();
+
+        m_connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
+        m_id = new NativeArray<int>(1, Allocator.Persistent);
     }
 
     void OnDestroy()
     {
-        ServerJobHandle.Complete();
+        m_updateHandle.Complete();
         m_driver.Dispose();
         m_connections.Dispose();
+        m_id.Dispose();
     }
 
-    // Update is called once per frame
-    void Update()
+    [BurstCompile]
+    struct DriverUpdateJob : IJob
     {
-        ServerJobHandle.Complete();
+        public UdpNetworkDriver driver;
+        public NativeList<NetworkConnection> connections;
 
-        var connectionJob = new ServerUpdateConnectionJob
+        public void Execute()
         {
+            // Remove connections that have been destroyed from the list of active connections
+            for (int i = 0; i < connections.Length; i++)
+            {
+                if (!connections[i].IsCreated)
+                {
+                    connections.RemoveAtSwapBack(i);
+                    i--;
+                }
+            }
+
+            // Accept all new connections
+            while (true)
+            {
+                var con = driver.Accept();
+                // "Nothing more to accept" is signaled by returning an invalid connection from accept
+                if (!con.IsCreated)
+                    break;
+                connections.Add(con);
+            }
+        }
+    }
+
+    [BurstCompile]
+#if ENABLE_IL2CPP
+    struct PongJob : IJob
+    {
+        public UdpNetworkDriver.Concurrent driver;
+        public NativeList<NetworkConnection> connections;
+        public NativeArray<int> id;
+
+        public void Execute()
+        {
+            int idFromData = 0;
+            for (int i = 0; i < connections.Length; i++)
+            {
+                connections[i] = ProcessSingleConnection(driver, connections[i], out idFromData);
+                id[0] = idFromData;
+            }
+        }
+    }
+#else
+    struct PongJob : IJobParallelForDefer
+    {
+        public UdpNetworkDriver.Concurrent driver;
+        public NativeArray<NetworkConnection> connections;
+        public NativeArray<int> id;
+
+        public void Execute(int i)
+        {
+            int idFromData = 0;
+            connections[i] = ProcessSingleConnection(driver, connections[i], out idFromData);
+            id[0] = idFromData;
+        }
+    }
+#endif
+
+    static NetworkConnection ProcessSingleConnection(UdpNetworkDriver.Concurrent driver, NetworkConnection connection, out int id)
+    {
+        DataStreamReader reader;
+        NetworkEvent.Type cmd;
+        id = 0;
+
+        // Pop all events for the connection
+        while ((cmd = driver.PopEventForConnection(connection, out reader)) != NetworkEvent.Type.Empty)
+        {
+            // Reply a ping requests with a pong message
+            if (cmd == NetworkEvent.Type.Data)
+            {
+                // A DataStreamReader.Context is required to keep track of current read position since DataStreamReader is immutable
+                var readerCtx = default(DataStreamReader.Context);
+                id = reader.ReadInt(ref readerCtx);
+
+                // create a temporary DataStreamWriter to keep the serialized pong message
+                var pongData = new DataStreamWriter(4, Allocator.Temp);
+                pongData.Write(id);
+
+                // Send the pong message with the same id as the ping
+                driver.Send(NetworkPipeline.Null, connection, pongData);
+            }
+            // When disconnected, connection return false to IsCreated so the next frames DriverUpdateJob will remove it
+            else if (cmd == NetworkEvent.Type.Disconnect)
+                return default(NetworkConnection);
+        }
+
+        return connection;
+    }
+
+    void LateUpdate()
+    {
+        m_updateHandle.Complete();
+    }
+
+    void FixedUpdate()
+    {
+        m_updateHandle.Complete();
+
+        if (m_id[0] != m_currentID && m_id[0] != 0)
+        {
+            m_currentID = m_id[0];
+            ShowMessage("Ping " + m_currentID + " received and reponse sent.");
+        }
+
+        // If at least one client is connected, update the activity so the server does not shut down
+        if (m_connections.Length > 0)
+            DedicatedServerConfig.UpdateLastActivity();
+        var updateJob = new DriverUpdateJob {
             driver = m_driver,
             connections = m_connections
         };
-
-        var serverUpdateJob = new ServerUpdateJob
-        {
+        var pongJob = new PongJob {
             driver = m_driver.ToConcurrent(),
-            connections = m_connections.ToDeferredJobArray()
+            id = m_id,
+#if ENABLE_IL2CPP
+            // IJobParallelForDeferExtensions is not working correctly with IL2CPP
+            connections = m_connections
+#else
+            connections = m_connections.AsDeferredJobArray()
+#endif
         };
 
-        ServerJobHandle = m_driver.ScheduleUpdate();
-        ServerJobHandle = connectionJob.Schedule(ServerJobHandle);
-        ServerJobHandle = serverUpdateJob.Schedule(m_connections.Length, 1, ServerJobHandle);
+        m_updateHandle = m_driver.ScheduleUpdate();             // Update the driver first
+        m_updateHandle = updateJob.Schedule(m_updateHandle);    // Acceipt new connections in DriverUpdateJob. It depends on the driver update job
+
+        // PongJob is the last job in the chain and it depends on the driver update job as well
+#if ENABLE_IL2CPP
+        m_updateHandle = pongJob.Schedule(m_updateHandle);
+#else
+        m_updateHandle = pongJob.Schedule(m_connections, 1, m_updateHandle);
+#endif
     }
-}
 
-struct ServerUpdateJob : IJobParallelFor
-{
-    public UdpCNetworkDriver.Concurrent driver;
-    public NativeArray<NetworkConnection> connections;
-
-    public void Execute(int index)
+    private void ShowMessage(string msg)
     {
-        if (!connections[index].IsCreated)
-            Assert.IsTrue(true);
-
-        DataStreamReader stream;
-        NetworkEvent.Type cmd;
-        while ((cmd = driver.PopEventForConnection(connections[index], out stream)) != NetworkEvent.Type.Empty)
-        {
-            if (cmd == NetworkEvent.Type.Data)
-            {
-                var readerCtx = default(DataStreamReader.Context);
-                uint number = stream.ReadUInt(ref readerCtx);
-                Debug.Log("Got " + number + " from the Client adding + 2 to it.");
-                number += 2;
-
-                using (var writer = new DataStreamWriter(4, Allocator.Temp))
-                {
-                    writer.Write(number);
-                    driver.Send(connections[index], writer);
-                }
-            }
-            else if (cmd == NetworkEvent.Type.Disconnect)
-            {
-                Debug.Log("Client Disconnected from server.");
-                connections[index] = default;
-            }
-        }
+        m_serverOutput.text += msg + "\n";
+        Debug.Log(msg);
     }
 }
 
-struct ServerUpdateConnectionJob : IJob
-{
-    public UdpCNetworkDriver driver;
-    public NativeList<NetworkConnection> connections;
 
-    public void Execute()
-    {
-        // Clean up connections
-        for (int i = 0; i < connections.Length; i++)
-        {
-            if (!connections[i].IsCreated)
-            {
-                connections.RemoveAtSwapBack(i);
-                --i;
-            }
-        }
-
-        // Accept New Connection
-        NetworkConnection c;
-        while ((c = driver.Accept()) != default)
-        {
-            connections.Add(c);
-            Debug.Log("Accepted a new connection");
-        }
-
-        // Process recieved data
-        DataStreamReader stream;
-        for (int i = 0; i < connections.Length; i++)
-        {
-            if (!connections[i].IsCreated)
-                continue;
-
-            NetworkEvent.Type cmd;
-            while ((cmd = driver.PopEventForConnection(connections[i], out stream)) != NetworkEvent.Type.Empty)
-            {
-                if (cmd == NetworkEvent.Type.Data)
-                {
-                    var readerCtx = default(DataStreamReader.Context);
-                    uint number = stream.ReadUInt(ref readerCtx);
-                    Debug.Log("Got " + number + " from the Client adding + 2 to it.");
-                    number += 2;
-
-                    using (var writer = new DataStreamWriter(4, Allocator.Temp))
-                    {
-                        writer.Write(number);
-                        driver.Send(connections[i], writer);
-                    }
-                }
-                else if (cmd == NetworkEvent.Type.Disconnect)
-                {
-                    Debug.Log("Client Disconnected from server.");
-                    connections[i] = default;
-                }
-            }
-        }
-    }
-}
