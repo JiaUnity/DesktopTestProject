@@ -16,16 +16,17 @@ public class PresetOne : MonoBehaviour
 #else
         text.text += "Checklist:\n";
         text.text += "1. Player window launches in <color=brown>fullscreen</color>.\n";
-        text.text += "2. Resolution Dialog <color=brown>did not appear</color>.\n";
-        text.text += "3. Player window is in native resolution. Launch: <color=brown>" + Screen.width + "x" + Screen.height + "</color>.\n";
-        text.text += "4. The music <color=brown>stops playing</color> when Player window loses focus.\n";
+        text.text += "2. Player window is in native resolution. Launch: <color=brown>" + Screen.width + "x" + Screen.height + "</color>.\n";
+        text.text += "3. The music <color=brown>stops playing</color> when Player window loses focus.";
 
 #if UNITY_STANDALONE_OSX
-        text.text += "5. Player window <color=brown>can</color> swtich to windowed mode (Command + F, Green Dot, etc.)\n";
-        text.text += "6. Dock and Menu Bar <color=brown>do not appear</color> when cursor is at the edge.\n";
+        text.text += "\n";
+        text.text += "4. Player window <color=brown>cannot</color> swtich to windowed mode (Command + F does not work. The Green Dot is disabled.)\n"
+        text.text += "5. Dock and Menu Bar <color=brown>do not appear</color> when cursor is at the edge.\n";
 #else
-        text.text += "5. Player window <color=brown>can</color> swtich to windowed mode (Alt + Enter, etc,) and the screen flickers during the process.\n";
-        text.text += "6. A second Player instance <color=brown>does not start</color> (mouse click, press Enter, etc.)";
+        text.text += " And the screen flickers during the change of focus.\n";
+        text.text += "4. Player window <color=brown>cannot</color> swtich to windowed mode (Alt + Enter, etc,).\n";
+        text.text += "5. A second Player instance <color=brown>does not start</color> (mouse click, press Enter, etc.)";
 #endif
 #endif
 

@@ -13,27 +13,21 @@ public class PresetThree : MonoBehaviour
 #if UNITY_EDITOR
         text.text += "Build Player, come back to this scene and follow the instruction to complete the test.\n\n";
 
-#else
+//#else
         text.text += "Checklist:\n";
-        text.text += "1. Resolution Dialog <color=brown>appears</color>.\n";
-        text.text += "2. In the Dialog, only <color=brown>4x3</color> and <color=brown>16x10</color> aspect ratio options are available";
-
-#if UNITY_STANDALONE_OSX
-        text.text += ", so are the options with resolution <color=brown>higher</color> than 1920 x 1200";
-#endif
-        text.text += ".\n";
-        text.text += "3. Player window launches with the setting from the Dialog. Launch: <color=brown>" + Screen.width + "x" + Screen.height + "</color>.\n";        
-        text.text += "4. When Player window loses focus, the music <color=brown>keeps playing</color>.\n";        
+        text.text += "1. Player window launches in <color=brown>fullscreen</color>.\n";
 
 #if UNITY_STANDALONE_OSX
         text.text += "5. Player window <color=brown>can</color> swtich between fullscreen and windowed mode (Command + F, Green Dot, etc.)\n"; 
         text.text += "6. In fullscreen mode, Dock and Menu Bar <color=brown>appear</color> when cursor is at the edge.\n";
 #else
-        text.text += "5. Player window <color=brown>can</color> swtich between fullscreen and windowed mode (Alt + Enter, etc,) and there is <color=brown>no flickering</color> during the process.\n";
-        text.text += "6. In fullscreen mode, Player window <color=brown>minimizes</color> when loses focus.\n"; 
+        text.text += "2. In fullscreen mode, when Player loses focus, the music <color=brown>stops playing</color>, but the Player window remains in place.\n";
+        text.text += "3. In windowed mode, Player window <color=brown>cannot</color> be resized. The maximize button in the top right corner is disabled.\n";
 #endif
-        text.text += "7. In fullscreen mode, Player window is <color=brown>scaled</color> but <color=brown>not stretched</color> to fit the screen with a different aspect ratio.\n";
-        text.text += "8. In windowed mode, Player window <color=brown>can be resized</color>.\n";
+        text.text += "4. Only Resolutions in aspect ratios 4:3 and 16:10 should be available.\n";
+        text.text += "Make sure these ones are available in the list below: <color=brown>640x480, 1920x1200</color>.\n";
+        text.text += "Make sure these ones are not available in the list: <color=brown>720x480, 720x576, 1920x1080</color>.\n\n";
+        text.text += "Available resolutions: <color=blue>" + ScreenManagerPreset.GetAvailableResolutions() + "</color>\n";
 #endif
 
 #else

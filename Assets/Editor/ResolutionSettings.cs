@@ -14,7 +14,7 @@ public class ResolutionSettings : MonoBehaviour
     //---- Menu Item Function to set Player settings ----
     //---------------------------------------------------
     //-- Preset 1: Fullscreen with native resolution and without dialog --
-    [MenuItem("Tools/Resolution Test/Reset")]
+    [MenuItem("QA/Resolution Test/Reset")]
     static void ResetSetting()
     {
         if (!SwitchSceneIfOkay())
@@ -29,7 +29,6 @@ public class ResolutionSettings : MonoBehaviour
         PlayerSettings.runInBackground = true;
 
         PlayerSettings.captureSingleScreen = true;
-        PlayerSettings.displayResolutionDialog = ResolutionDialogSetting.HiddenByDefault;
         PlayerSettings.resizableWindow = true;
         PlayerSettings.visibleInBackground = true;
         PlayerSettings.allowFullscreenSwitch = true;
@@ -44,7 +43,7 @@ public class ResolutionSettings : MonoBehaviour
         OpenTestScene(0);
     }
 
-    [MenuItem("Tools/Resolution Test/Preset 1")]
+    [MenuItem("QA/Resolution Test/Preset 1")]
     static void Setting1()
     {
         if (!SwitchSceneIfOkay())
@@ -60,11 +59,10 @@ public class ResolutionSettings : MonoBehaviour
         PlayerSettings.macRetinaSupport = true;
         PlayerSettings.runInBackground = false;
 
-        //PlayerSettings.captureSingleScreen = true;
-        PlayerSettings.displayResolutionDialog = ResolutionDialogSetting.Disabled;
+        PlayerSettings.captureSingleScreen = true;
         PlayerSettings.resizableWindow = false;
         PlayerSettings.visibleInBackground = true;
-        PlayerSettings.allowFullscreenSwitch = true;
+        PlayerSettings.allowFullscreenSwitch = false;
         PlayerSettings.forceSingleInstance = true;
 
         PlayerSettings.SetAspectRatio(AspectRatio.Aspect4by3, true);
@@ -77,7 +75,7 @@ public class ResolutionSettings : MonoBehaviour
     }
 
     //-- Preset 2: Windowed with hidden resolution dialog --
-    [MenuItem("Tools/Resolution Test/Preset 2")]
+    [MenuItem("QA/Resolution Test/Preset 2")]
     static void Setting2()
     {
         if (!SwitchSceneIfOkay())
@@ -89,13 +87,12 @@ public class ResolutionSettings : MonoBehaviour
         PlayerSettings.defaultScreenWidth = 1024;
         PlayerSettings.defaultScreenHeight = 768;
         PlayerSettings.macRetinaSupport = false;
-        PlayerSettings.runInBackground = false;
+        PlayerSettings.runInBackground = true;
 
         PlayerSettings.captureSingleScreen = true;
-        PlayerSettings.displayResolutionDialog = ResolutionDialogSetting.HiddenByDefault;
-        PlayerSettings.resizableWindow = false;
-        PlayerSettings.visibleInBackground = true;
-        PlayerSettings.allowFullscreenSwitch = false;
+        PlayerSettings.resizableWindow = true;
+        PlayerSettings.visibleInBackground = false;
+        PlayerSettings.allowFullscreenSwitch = true;
         PlayerSettings.forceSingleInstance = false;
 
         PlayerSettings.SetAspectRatio(AspectRatio.Aspect4by3, true);
@@ -108,7 +105,7 @@ public class ResolutionSettings : MonoBehaviour
     }
 
     //-- Preset 3: Windowed with resolution dialog --
-    [MenuItem("Tools/Resolution Test/Preset 3")]
+    [MenuItem("QA/Resolution Test/Preset 3")]
     static void Setting3()
     {
         if (!SwitchSceneIfOkay())
@@ -124,12 +121,11 @@ public class ResolutionSettings : MonoBehaviour
         PlayerSettings.defaultScreenWidth = 1024;
         PlayerSettings.defaultScreenHeight = 768;
         PlayerSettings.macRetinaSupport = true;
-        PlayerSettings.runInBackground = true;
+        PlayerSettings.runInBackground = false;
 
         PlayerSettings.captureSingleScreen = false;
-        PlayerSettings.displayResolutionDialog = ResolutionDialogSetting.Enabled;
-        PlayerSettings.resizableWindow = true;
-        PlayerSettings.visibleInBackground = false;
+        PlayerSettings.resizableWindow = false;
+        PlayerSettings.visibleInBackground = true;
         PlayerSettings.allowFullscreenSwitch = true;
         PlayerSettings.forceSingleInstance = false;
 
