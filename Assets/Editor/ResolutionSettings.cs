@@ -14,7 +14,7 @@ public class ResolutionSettings : MonoBehaviour
     //---- Menu Item Function to set Player settings ----
     //---------------------------------------------------
     //-- Preset 1: Fullscreen with native resolution and without dialog --
-    [MenuItem("Tools/Resolution Test/Reset")]
+    [MenuItem("QA/Resolution Test/Reset")]
     static void ResetSetting()
     {
         if (!SwitchSceneIfOkay())
@@ -44,7 +44,7 @@ public class ResolutionSettings : MonoBehaviour
         OpenTestScene(0);
     }
 
-    [MenuItem("Tools/Resolution Test/Preset 1")]
+    [MenuItem("QA/Resolution Test/Preset 1")]
     static void Setting1()
     {
         if (!SwitchSceneIfOkay())
@@ -77,7 +77,7 @@ public class ResolutionSettings : MonoBehaviour
     }
 
     //-- Preset 2: Windowed with hidden resolution dialog --
-    [MenuItem("Tools/Resolution Test/Preset 2")]
+    [MenuItem("QA/Resolution Test/Preset 2")]
     static void Setting2()
     {
         if (!SwitchSceneIfOkay())
@@ -108,7 +108,7 @@ public class ResolutionSettings : MonoBehaviour
     }
 
     //-- Preset 3: Windowed with resolution dialog --
-    [MenuItem("Tools/Resolution Test/Preset 3")]
+    [MenuItem("QA/Resolution Test/Preset 3")]
     static void Setting3()
     {
         if (!SwitchSceneIfOkay())
