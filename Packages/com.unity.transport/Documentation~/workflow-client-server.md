@@ -18,7 +18,7 @@ This workflow helps you create a sample project that highlights how to use the `
 - Disconnect
 - Timeout a connection
 
-> **Note**: This workflow covers all aspects of the Unity.Networking.Transport package. 
+> **Note**: This workflow covers all aspects of the Unity.Networking.Transport package.
 
 The goal is to make a remote `add` function. The flow will be: a client connects to the server, and sends a number, this number is then received by the server that adds another number to it and sends it back to the client. The client, upon receiving the number, disconnects and quits.
 
@@ -40,21 +40,21 @@ public class ServerBehaviour : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        
+
     }
 
     // Update is called once per frame
     void Update () {
-        
+
     }
 }
 ```
 
 ### Boilerplate code
 
-As the `unity.networking.transport` package is a low level API, there is a bit of boiler plate code you might want to setup. This is an architecture design Unity chose to make sure that you always have full control. 
+As the `unity.networking.transport` package is a low level API, there is a bit of boiler plate code you might want to setup. This is an architecture design Unity chose to make sure that you always have full control.
 
-> **Note**: As development on the `unity.networking` package evolves, more abstractions may be created to reduce your workload on a day-to-day basis. 
+> **Note**: As development on the `unity.networking` package evolves, more abstractions may be created to reduce your workload on a day-to-day basis.
 
 The next step is to clean up the dependencies and add our boilerplate code:
 
@@ -74,21 +74,21 @@ using UdpCNetworkDriver = Unity.Networking.Transport.BasicNetworkDriver<Unity.Ne
 
 #### Code walkthrough
 
-`using System.Net;`  
+`using System.Net;`
 
-This dependency is added to get easy access to the `IPEndPoint` and `IPAddress`. 
+This dependency is added to get easy access to the `IPEndPoint` and `IPAddress`.
 
 > **Note**: The networking package does not use these types internally, but it can implicitly convert them to its internal representation for ease of use.
 
 ```
-using Unity.Networking.Transport; 
+using Unity.Networking.Transport;
 using Unity.Collections;
 ```
 
 This code includes this package and the new `Unity.Collections` library. We will need `NativeList` for our example on the server to book-keep what active connections we have.
 
 ```
-using NetworkConnection = Unity.Networking.Transport.NetworkConnection; 
+using NetworkConnection = Unity.Networking.Transport.NetworkConnection;
 using UdpCNetworkDriver = Unity.Networking.Transport.BasicNetworkDriver<Unity.Networking.Transport.IPv4UDPSocket>;
 ```
 
@@ -112,7 +112,7 @@ public class ServerBehaviour : MonoBehaviour {
 
     void Start () {
     }
-    
+
     void OnDestroy() {
     }
 
@@ -148,7 +148,7 @@ You need to declare a `INetworkDriver`, in this case you can use the `BasicNetwo
 
 #### Code walkthrough
 
-The first line of code, `m_Driver = new UdpCNetworkDriver(new INetworkParameter[0]);` , just makes sure you are creating your driver without any parameters. 
+The first line of code, `m_Driver = new UdpCNetworkDriver(new INetworkParameter[0]);` , just makes sure you are creating your driver without any parameters.
 
 ```c#
 if (m_Driver.Bind(new IPEndPoint(IPAddress.Any, 9000)) != 0)
@@ -157,9 +157,9 @@ if (m_Driver.Bind(new IPEndPoint(IPAddress.Any, 9000)) != 0)
             m_Driver.Listen();
 ```
 
-Then we try to bind our driver to a specific network address and port, and if that does not fail, we call the `Listen` method. 
+Then we try to bind our driver to a specific network address and port, and if that does not fail, we call the `Listen` method.
 
-> **Important**: the call to the `Listen` method sets the `NetworkDriver` to the `Listen` state. This means that the `NetworkDriver` will now actively listen for incoming connections. 
+> **Important**: the call to the `Listen` method sets the `NetworkDriver` to the `Listen` state. This means that the `NetworkDriver` will now actively listen for incoming connections.
 
 ` m_Connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);`
 
@@ -188,7 +188,7 @@ As the `unity.networking.transport` package uses the [Unity C# Job System](https
 
 ```c#
     void Update () {
-        
+
         m_Driver.ScheduleUpdate().Complete();
 ```
 > **Note**: In this example, we are forcing a synchronization on the main thread in order to update and handle our data later in the `MonoBehaviour::Update` call. The workflow [Creating a jobified client and server](workflow-client-server-jobs.md) shows you how to use the Transport package with the C# Job System.
@@ -309,7 +309,7 @@ public class ClientBehaviour : MonoBehaviour {
     public UdpCNetworkDriver m_Driver;
     public NetworkConnection m_Connection;
     public bool Done;
-    
+
     void Start () { ... }
     public void OnDestroy() { ... }
     void Update() { ... }
@@ -361,13 +361,13 @@ You should recognize the code below, but if you look closely you can see that th
 ```c#
         DataStreamReader stream;
         NetworkEvent.Type cmd;
-        while ((cmd = m_Connection.PopEvent(m_Driver, out stream)) != 
+        while ((cmd = m_Connection.PopEvent(m_Driver, out stream)) !=
             NetworkEvent.Type.Empty)
         {
 ```
 
 Now you encounter a new event you have not seen yet: a `NetworkEvent.Type.Connect` event.
-This event tells you that you have received a `ConnectionAccept` message and you are now connected to the remote peer. 
+This event tells you that you have received a `ConnectionAccept` message and you are now connected to the remote peer.
 
 > **Note**: In this case, the server that is listening on port `9000` on `IPAddress.Loopback` is more commonly known as `127.0.0.1`.
 
@@ -375,7 +375,7 @@ This event tells you that you have received a `ConnectionAccept` message and you
             if (cmd == NetworkEvent.Type.Connect)
             {
                 Debug.Log("We are now connected to the server");
-                
+
                 var value = 1;
                 using (var writer = new DataStreamWriter(4, Allocator.Temp))
                 {
@@ -386,7 +386,7 @@ This event tells you that you have received a `ConnectionAccept` message and you
 ```
 When you establish a connection between the client and the server, you send a number (that you want the server to increment by two). The use of the `using` pattern together with the `DataStreamWriter`, where we set `value` to one, write it into the stream, and finally send it out on the network.
 
-When the `NetworkEvent` type is `Data`, as below, you read the `value` back that you received from the server and then call the `Disconnect` method. 
+When the `NetworkEvent` type is `Data`, as below, you read the `value` back that you received from the server and then call the `Disconnect` method.
 
 > **Note**: A good pattern is to always set your `NetworkConnection` to `default(NetworkConnection)` to avoid stale references.
 
@@ -402,7 +402,7 @@ When the `NetworkEvent` type is `Data`, as below, you read the `value` back that
             }
 
 ```
-Lastly we just want to make sure we handle the case that a server disconnects us for some reason. 
+Lastly we just want to make sure we handle the case that a server disconnects us for some reason.
 
 ```c#
 
@@ -422,9 +422,9 @@ Here is the full source code for the [_ClientBehaviour.cs_](clientbehaviour.cs.m
 
 To take this for a test run, you can simply add a new empty [GameObject](https://docs.unity3d.com/ScriptReference/GameObject.html) to our **Scene**.
 
-![GameObject Added](images/game-object.PNG)  
+![GameObject Added](images/game-object.PNG)
 
-Add add both of our behaviours to it.  
+Add add both of our behaviours to it.
 ![Inspector](images/inspector.PNG)
 
 Now when we press __Play__ we should see five log messages show up in your __Console__ window. Similar to this:

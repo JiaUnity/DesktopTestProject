@@ -101,7 +101,7 @@ namespace Unity.Networking.Transport.Tests
             var readerCtx = default(DataStreamReader.Context);
             Assert.True(reader.IsCreated);
             reader.ReadBytes(ref readerCtx, header.Data, sizeof(UdpCHeader));
-            Assert.True(header.Type == (int) UdpCProtocol.ConnectionRequest);
+            Assert.True(header.Type == (int)UdpCProtocol.ConnectionRequest);
 
             Assert.True(remote.Family == NetworkFamily.IPC);
             //Assert.True(remote.ipc_handle == from.ipc_handle);
@@ -131,7 +131,7 @@ namespace Unity.Networking.Transport.Tests
             var readerCtx = default(DataStreamReader.Context);
             Assert.True(reader.IsCreated);
             reader.ReadBytes(ref readerCtx, header.Data, sizeof(UdpCHeader));
-            Assert.True(header.Type == (int) UdpCProtocol.Disconnect);
+            Assert.True(header.Type == (int)UdpCProtocol.Disconnect);
 
             Assert.True(remote.Family == NetworkFamily.IPC);
             //Assert.True(remote.ipc_handle == from.ipc_handle);
@@ -148,7 +148,7 @@ namespace Unity.Networking.Transport.Tests
             iovecs[1].buf = m_LocalDataStream.GetUnsafePtr() + sizeof(UdpCHeader);
             iovecs[1].len = NetworkParameterConstants.MTU;
             int dataLen = 0;
-            fixed (network_iovec* iovptr = &iovecs[0])
+            fixed(network_iovec* iovptr = &iovecs[0])
             {
                 dataLen = IPCManager.Instance.ReceiveMessageEx(Address, iovptr, 2, ref remote);
             }
@@ -158,7 +158,7 @@ namespace Unity.Networking.Transport.Tests
                 iovecs[0].len = iovecs[1].len = 0;
             }
 
-            Assert.True(iovecs[0].len+iovecs[1].len == dataLen);
+            Assert.True(iovecs[0].len + iovecs[1].len == dataLen);
             Assert.True(iovecs[0].len == sizeof(UdpCHeader));
             m_LocalDataStream.WriteBytesWithUnsafePointer(iovecs[0].len);
 
@@ -167,7 +167,7 @@ namespace Unity.Networking.Transport.Tests
             var readerCtx = default(DataStreamReader.Context);
             Assert.True(reader.IsCreated);
             reader.ReadBytes(ref readerCtx, header.Data, sizeof(UdpCHeader));
-            Assert.True(header.Type == (int) UdpCProtocol.Data);
+            Assert.True(header.Type == (int)UdpCProtocol.Data);
 
             Assert.True(remote.Family == NetworkFamily.IPC);
             //Assert.True(remote.ipc_handle == from.ipc_handle);
@@ -384,7 +384,7 @@ namespace Unity.Networking.Transport.Tests
 
                 var stream = new DataStreamWriter(100, Allocator.Persistent);
                 for (int i = 0; i < 100; i++)
-                    stream.Write((byte) i);
+                    stream.Write((byte)i);
 
                 // Host sends stuff but gets nothing back, until disconnect timeout happens
                 var timeout = m_timer.ElapsedMilliseconds + 100;

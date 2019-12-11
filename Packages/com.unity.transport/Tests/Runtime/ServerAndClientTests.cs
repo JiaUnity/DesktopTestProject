@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using Unity.Collections;
 using NUnit.Framework;
 using System;
@@ -45,7 +45,7 @@ namespace Tests
 
             client_driver.ScheduleUpdate().Complete();
             ev = clientToServerConnection.PopEvent(client_driver, out stream);
-            Assert.IsTrue(ev == NetworkEvent.Type.Connect, "NetworkEvent should have Type.Connect on the client");            
+            Assert.IsTrue(ev == NetworkEvent.Type.Connect, "NetworkEvent should have Type.Connect on the client");
         }
 
         public void DisconnectAndCleanup()
@@ -207,8 +207,8 @@ namespace Tests
             m_OutStream.Clear();
             m_OutStream.Write(SharedConstants.ping);
             clientToServerConnection.Send(client_driver, m_OutStream);
-                       
-            LogAssert.Expect(LogType.Error, "Error on receive 10040");            
+
+            LogAssert.Expect(LogType.Error, "Error on receive 10040");
             m_OutStream.Dispose();
 
             //handle sent data
@@ -307,7 +307,8 @@ namespace Tests
 
 public class SharedConstants
 {
-    public static byte[] ping = {
+    public static byte[] ping =
+    {
         (byte)'f',
         (byte)'r',
         (byte)'o',
@@ -320,7 +321,8 @@ public class SharedConstants
         (byte)'r'
     };
 
-    public static byte[] pong = {
+    public static byte[] pong =
+    {
         (byte)'c',
         (byte)'l',
         (byte)'i',

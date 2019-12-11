@@ -53,18 +53,18 @@ public class VideoControl : MonoBehaviour
 
         if (m_debugText != null)
             m_debugText.text = m_videoPlayer.clip.name + "\n"
-                             + "Resolution: " + m_videoPlayer.clip.width + " x " + m_videoPlayer.clip.height + "\n"
-                             + "Frame rate: " + m_videoPlayer.frameRate + "\n"
-                             + "Is Playing: " + m_videoPlayer.isPlaying.ToString() + "\n"
-                             + "Is Prepared: " + m_videoPlayer.isPrepared.ToString() + "\n";
+                + "Resolution: " + m_videoPlayer.clip.width + " x " + m_videoPlayer.clip.height + "\n"
+                + "Frame rate: " + m_videoPlayer.frameRate + "\n"
+                + "Is Playing: " + m_videoPlayer.isPlaying.ToString() + "\n"
+                + "Is Prepared: " + m_videoPlayer.isPrepared.ToString() + "\n";
 
         if (m_timelineSlider != null)
         {
             if (isDraggingTimeline)
-                GoToTime(m_timelineSlider.normalizedValue * m_videoPlayer.clip.length);            
+                GoToTime(m_timelineSlider.normalizedValue * m_videoPlayer.clip.length);
             else
                 m_timelineSlider.normalizedValue = (float)(m_videoPlayer.time / m_videoPlayer.clip.length);
-        }            
+        }
     }
 
     public void SwitchPlayPause()
@@ -117,10 +117,9 @@ public class VideoControl : MonoBehaviour
         {
             isDraggingTimeline = false;
             if (isPreviousPlaying)
-                StartCoroutine("Play");            
-        }        
+                StartCoroutine("Play");
+        }
     }
-
 
     private void LoadVideoClip(VideoClip video)
     {
@@ -134,7 +133,7 @@ public class VideoControl : MonoBehaviour
         StartCoroutine("InitializeVideo");
         StartCoroutine("Play");
     }
-    
+
     IEnumerator InitializeVideo()
     {
         //Debug.Log("Start Prepare");

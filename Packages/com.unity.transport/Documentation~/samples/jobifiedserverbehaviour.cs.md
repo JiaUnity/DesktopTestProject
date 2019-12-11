@@ -54,7 +54,7 @@ struct ServerUpdateJob : IJobParallelFor
             {
                 var readerCtx = default(DataStreamReader.Context);
                 uint number = stream.ReadUInt(ref readerCtx);
-                
+
                 Debug.Log("Got " + number + " from the Client adding + 2 to it.");
                 number +=2;
 
@@ -80,7 +80,7 @@ public class JobifiedServerBehaviour : MonoBehaviour
     private JobHandle ServerJobHandle;
 
     void Start ()
-	{
+    {
         m_Connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
         m_Driver = new UdpCNetworkDriver(new INetworkParameter[0]);
         if (m_Driver.Bind(new IPEndPoint(IPAddress.Any, 9000)) != 0)
@@ -96,23 +96,23 @@ public class JobifiedServerBehaviour : MonoBehaviour
         m_Connections.Dispose();
         m_Driver.Dispose();
     }
-    
+
     void Update ()
-	{
+    {
         ServerJobHandle.Complete();
-        
+
         var connectionJob = new ServerUpdateConnectionsJob
         {
-            driver = m_Driver, 
+            driver = m_Driver,
             connections = m_Connections
         };
-        
+
         var serverUpdateJob = new ServerUpdateJob
         {
             driver = m_Driver.ToConcurrent(),
             connections = m_Connections.ToDeferredJobArray()
         };
-        
+
         ServerJobHandle = m_Driver.ScheduleUpdate();
         ServerJobHandle = connectionJob.Schedule(ServerJobHandle);
         ServerJobHandle = serverUpdateJob.Schedule(m_Connections, 1, ServerJobHandle);

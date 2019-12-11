@@ -148,7 +148,7 @@ namespace Unity.Networking.Transport
                 if (data.length + iov[i].len >= NetworkParameterConstants.MTU)
                     throw new ArgumentOutOfRangeException("Cannot send more data than an MTU");
 #endif
-                UnsafeUtility.MemCpy(data.data+data.length, iov[i].buf, iov[i].len);
+                UnsafeUtility.MemCpy(data.data + data.length, iov[i].buf, iov[i].len);
                 data.length += iov[i].len;
             }
             queue.Enqueue(new IPCQueuedMessage {dest = address.ipc_handle, data = data});
@@ -169,9 +169,9 @@ namespace Unity.Networking.Transport
 #endif
 
 #if (UNITY_EDITOR_OSX || ((UNITY_STANDALONE_OSX || UNITY_IOS) && !UNITY_EDITOR))
-            remote.family.sa_family = (byte) NetworkFamily.IPC;
+            remote.family.sa_family = (byte)NetworkFamily.IPC;
 #else
-            remote.family.sa_family = (ushort) NetworkFamily.IPC;
+            remote.family.sa_family = (ushort)NetworkFamily.IPC;
 #endif
             remote.ipc_handle = endpoint.ipc_handle;
             remote.nbo_port = endpoint.nbo_port;

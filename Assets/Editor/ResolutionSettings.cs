@@ -119,7 +119,7 @@ public class ResolutionSettings : MonoBehaviour
 #else
         PlayerSettings.fullScreenMode = FullScreenMode.FullScreenWindow;
 #endif
-        
+
         PlayerSettings.defaultIsNativeResolution = false;
         PlayerSettings.defaultScreenWidth = 1024;
         PlayerSettings.defaultScreenHeight = 768;

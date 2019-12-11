@@ -83,7 +83,7 @@ namespace Unity.Networking.Transport.Utilities
         public static unsafe void InitializeContext(Parameters param, NativeSlice<byte> sharedProcessBuffer)
         {
             // Store parameters in the shared buffer space
-            Context* ctx = (Context*) sharedProcessBuffer.GetUnsafePtr();
+            Context* ctx = (Context*)sharedProcessBuffer.GetUnsafePtr();
             ctx->MaxPacketCount = param.MaxPacketCount;
             ctx->MaxPacketSize = param.MaxPacketSize;
             ctx->PacketDelayMs = param.PacketDelayMs;
@@ -104,7 +104,7 @@ namespace Unity.Networking.Transport.Utilities
             for (int i = 0; i < m_PacketCount; i++)
             {
                 packetDataOffset = dataSize * i;
-                DelayedPacket* packetData = (DelayedPacket*) (processBufferPtr + packetDataOffset);
+                DelayedPacket* packetData = (DelayedPacket*)(processBufferPtr + packetDataOffset);
 
                 // Check if this slot is empty
                 if (packetData->delayUntil == 0)
@@ -134,16 +134,16 @@ namespace Unity.Networking.Transport.Utilities
             needsUpdate = needsResume = false;
 
             var dataSize = UnsafeUtility.SizeOf<DelayedPacket>();
-            byte* processBufferPtr = (byte*) ctx.internalProcessBuffer.GetUnsafePtr();
-            var simCtx = (Context*) ctx.internalSharedProcessBuffer.GetUnsafePtr();
+            byte* processBufferPtr = (byte*)ctx.internalProcessBuffer.GetUnsafePtr();
+            var simCtx = (Context*)ctx.internalSharedProcessBuffer.GetUnsafePtr();
             int oldestPacketIndex = -1;
             long oldestTime = long.MaxValue;
             int readyPackets = 0;
             int packetsInQueue = 0;
             for (int i = 0; i < m_PacketCount; i++)
             {
-                DelayedPacket* packet = (DelayedPacket*) (processBufferPtr + dataSize * i);
-                if ((int) packet->delayUntil == 0) continue;
+                DelayedPacket* packet = (DelayedPacket*)(processBufferPtr + dataSize * i);
+                if ((int)packet->delayUntil == 0) continue;
                 packetsInQueue++;
 
                 if (packet->delayUntil > currentTimestamp) continue;
@@ -175,7 +175,7 @@ namespace Unity.Networking.Transport.Utilities
 
             if (oldestPacketIndex >= 0)
             {
-                DelayedPacket* packet = (DelayedPacket*) (processBufferPtr + dataSize * oldestPacketIndex);
+                DelayedPacket* packet = (DelayedPacket*)(processBufferPtr + dataSize * oldestPacketIndex);
                 packet->delayUntil = 0;
 
                 delayedPacket = new NativeSlice<byte>(ctx.internalProcessBuffer, packet->processBufferOffset,
@@ -193,7 +193,7 @@ namespace Unity.Networking.Transport.Utilities
             // Find empty slot in bookkeeping data space to track this packet
             int packetPayloadOffset = 0;
             int packetDataOffset = 0;
-            var processBufferPtr = (byte*) ctx.internalProcessBuffer.GetUnsafePtr();
+            var processBufferPtr = (byte*)ctx.internalProcessBuffer.GetUnsafePtr();
             bool foundSlot = GetEmptyDataSlot(processBufferPtr, ref packetPayloadOffset, ref packetDataOffset);
 
             if (!foundSlot)
@@ -213,7 +213,7 @@ namespace Unity.Networking.Transport.Utilities
             packet.delayUntil = timestamp + m_PacketDelayMs;
             packet.processBufferOffset = packetPayloadOffset;
             packet.packetSize = inboundBuffer.buffer1.Length + inboundBuffer.buffer2.Length;
-            byte* packetPtr = (byte*) &packet;
+            byte* packetPtr = (byte*)&packet;
             UnsafeUtility.MemCpy(processBufferPtr + packetDataOffset, packetPtr, UnsafeUtility.SizeOf<DelayedPacket>());
 
             // Schedule an update call so packet can be resurrected later

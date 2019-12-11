@@ -42,6 +42,7 @@ namespace Unity.Networking.Transport.Tests
             updateHandle.Complete();
             driver.Dispose();
         }
+
         [Test]
         public void ScheduleUpdateWithMissingDependencyThrowsException()
         {
@@ -51,6 +52,7 @@ namespace Unity.Networking.Transport.Tests
             updateHandle.Complete();
             driver.Dispose();
         }
+
         [Test]
         public void DataStremReaderIsOnlyUsableUntilUpdate()
         {
@@ -109,6 +111,7 @@ namespace Unity.Networking.Transport.Tests
             clientDriver.Dispose();
             serverDriver.Dispose();
         }
+
         struct ReceiveJob : IJob
         {
             public LocalNetworkDriver driver;
@@ -182,6 +185,7 @@ namespace Unity.Networking.Transport.Tests
             clientDriver.Dispose();
             serverDriver.Dispose();
         }
+
         struct SendReceiveParallelJob : IJobParallelFor
         {
             public LocalNetworkDriver.Concurrent driver;
@@ -243,7 +247,8 @@ namespace Unity.Networking.Transport.Tests
             clientDriver1.Dispose();
             serverDriver.Dispose();
         }
-        [BurstCompile/*(CompileSynchronously = true)*/] // FIXME: sync compilation makes tests timeout
+
+        [BurstCompile /*(CompileSynchronously = true)*/] // FIXME: sync compilation makes tests timeout
         struct SendReceiveWithPipelineParallelJob : IJobParallelFor
         {
             public LocalNetworkDriver.Concurrent driver;

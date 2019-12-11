@@ -24,12 +24,12 @@ public class Bobbing : MonoBehaviour
     void Update()
     {
         targetPos = new Vector3(startPos.x + (bobAmount.x * Mathf.Sin(Time.time * bobSpeed.x)),
-                startPos.y + (bobAmount.y * Mathf.Sin(Time.time * bobSpeed.y)),
-                startPos.z + (bobAmount.z * Mathf.Sin(Time.time * bobSpeed.z)));
+            startPos.y + (bobAmount.y * Mathf.Sin(Time.time * bobSpeed.y)),
+            startPos.z + (bobAmount.z * Mathf.Sin(Time.time * bobSpeed.z)));
 
         targetRot = new Vector3(startRot.x + (rotateAmount.x * Mathf.Sin(Time.time * rotateSpeed.x)),
-                startRot.y + (rotateAmount.y * Mathf.Sin(Time.time * rotateSpeed.y)),
-                startRot.z + (rotateAmount.z * Mathf.Sin(Time.time * rotateSpeed.z)));
+            startRot.y + (rotateAmount.y * Mathf.Sin(Time.time * rotateSpeed.y)),
+            startRot.z + (rotateAmount.z * Mathf.Sin(Time.time * rotateSpeed.z)));
 
         transform.localEulerAngles = targetRot;
         transform.localPosition = targetPos;

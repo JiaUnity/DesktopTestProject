@@ -1,4 +1,4 @@
-﻿using Unity.Collections;
+using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Networking.Transport.Utilities;
 
@@ -17,7 +17,7 @@ namespace Unity.Networking.Transport
 
         public unsafe NativeSlice<byte> Receive(NetworkPipelineContext ctx, NativeSlice<byte> inboundBuffer, ref bool needsResume, ref bool needsUpdate, ref bool needsSendUpdate)
         {
-            var param = (SimulatorUtility.Context*) ctx.internalSharedProcessBuffer.GetUnsafePtr();
+            var param = (SimulatorUtility.Context*)ctx.internalSharedProcessBuffer.GetUnsafePtr();
             var simulator = new SimulatorUtility(m_SimulatorParams.MaxPacketCount, m_SimulatorParams.MaxPacketSize, m_SimulatorParams.PacketDelayMs);
             if (inboundBuffer.Length > m_SimulatorParams.MaxPacketSize)
             {
@@ -72,7 +72,7 @@ namespace Unity.Networking.Transport
                 SimulatorUtility.InitializeContext(m_SimulatorParams, sharedProcessBuffer);
         }
 
-        public int ReceiveCapacity => m_SimulatorParams.MaxPacketCount * (m_SimulatorParams.MaxPacketSize+UnsafeUtility.SizeOf<SimulatorUtility.DelayedPacket>());
+        public int ReceiveCapacity => m_SimulatorParams.MaxPacketCount * (m_SimulatorParams.MaxPacketSize + UnsafeUtility.SizeOf<SimulatorUtility.DelayedPacket>());
         public int SendCapacity => 0;
         public int HeaderCapacity => 0;
         public int SharedStateCapacity => UnsafeUtility.SizeOf<SimulatorUtility.Context>();
@@ -97,7 +97,7 @@ namespace Unity.Networking.Transport
         public InboundBufferVec Send(NetworkPipelineContext ctx, InboundBufferVec inboundBuffer, ref bool needsResume, ref bool needsUpdate)
         {
             var simulator = new SimulatorUtility(m_SimulatorParams.MaxPacketCount, m_SimulatorParams.MaxPacketSize, m_SimulatorParams.PacketDelayMs);
-            if (inboundBuffer.buffer1.Length+inboundBuffer.buffer2.Length > m_SimulatorParams.MaxPacketSize)
+            if (inboundBuffer.buffer1.Length + inboundBuffer.buffer2.Length > m_SimulatorParams.MaxPacketSize)
             {
                 //UnityEngine.Debug.LogWarning("Incoming packet too large for internal storage buffer. Passing through. [buffer=" + (inboundBuffer.buffer1.Length+inboundBuffer.buffer2.Length) + " packet=" + param->MaxPacketSize + "]");
                 return inboundBuffer;
@@ -134,7 +134,7 @@ namespace Unity.Networking.Transport
         }
 
         public int ReceiveCapacity => 0;
-        public int SendCapacity => m_SimulatorParams.MaxPacketCount * (m_SimulatorParams.MaxPacketSize+UnsafeUtility.SizeOf<SimulatorUtility.DelayedPacket>());
+        public int SendCapacity => m_SimulatorParams.MaxPacketCount * (m_SimulatorParams.MaxPacketSize + UnsafeUtility.SizeOf<SimulatorUtility.DelayedPacket>());
         public int HeaderCapacity => 0;
         public int SharedStateCapacity => UnsafeUtility.SizeOf<SimulatorUtility.Context>();
     }

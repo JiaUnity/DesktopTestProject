@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Networking.Transport.LowLevel.Unsafe;
@@ -136,7 +136,8 @@ namespace Unity.Networking.Transport
             }
         }
 
-        public NetworkEndPoint RemoteEndPoint {
+        public NetworkEndPoint RemoteEndPoint
+        {
             get { return m_RemoteEndPoint; }
         }
 
@@ -172,7 +173,7 @@ namespace Unity.Networking.Transport
                 {
                     if (receiver.DynamicDataStreamSize())
                     {
-                        while (stream.Length+NetworkParameterConstants.MTU >= stream.Capacity)
+                        while (stream.Length + NetworkParameterConstants.MTU >= stream.Capacity)
                             stream.Capacity *= 2;
                     }
                     else if (stream.Length >= stream.Capacity)
@@ -184,7 +185,6 @@ namespace Unity.Networking.Transport
                         return;
                     receiver.ReceiveCount += receiver.AppendPacket(address, header, result);
                 }
-
             }
 
             unsafe int NativeReceive(ref UdpCHeader header, void* data, int length, ref NetworkEndPoint address)
@@ -195,7 +195,7 @@ namespace Unity.Networking.Transport
 #endif
                 var iov = stackalloc network_iovec[2];
 
-                fixed (byte* ptr = header.Data)
+                fixed(byte* ptr = header.Data)
                 {
                     iov[0].buf = ptr;
                     iov[0].len = UdpCHeader.Length;
@@ -339,7 +339,7 @@ namespace Unity.Networking.Transport
                 {
                     if (receiver.DynamicDataStreamSize())
                     {
-                        while (stream.Length+NetworkParameterConstants.MTU >= stream.Capacity)
+                        while (stream.Length + NetworkParameterConstants.MTU >= stream.Capacity)
                             stream.Capacity *= 2;
                     }
                     else if (stream.Length >= stream.Capacity)
@@ -367,7 +367,7 @@ namespace Unity.Networking.Transport
 #endif
                 var iov = stackalloc network_iovec[2];
 
-                fixed (byte* ptr = header.Data)
+                fixed(byte* ptr = header.Data)
                 {
                     iov[0].buf = ptr;
                     iov[0].len = UdpCHeader.Length;
@@ -388,7 +388,7 @@ namespace Unity.Networking.Transport
         {
             var sendJob = new SendUpdate {ipcManager = IPCManager.Instance, ipcQueue = m_IPCQueue};
             var job = new ReceiveJob<T>
-                {receiver = receiver, ipcManager = IPCManager.Instance, localEndPoint = m_LocalEndPoint[0]};
+            {receiver = receiver, ipcManager = IPCManager.Instance, localEndPoint = m_LocalEndPoint[0]};
             dep = job.Schedule(JobHandle.CombineDependencies(dep, IPCManager.ManagerAccessHandle));
             dep = sendJob.Schedule(dep);
             IPCManager.ManagerAccessHandle = dep;

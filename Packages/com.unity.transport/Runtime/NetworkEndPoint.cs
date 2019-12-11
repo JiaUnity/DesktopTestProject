@@ -33,7 +33,7 @@ namespace Unity.Networking.Transport
             uint test = 1;
             unsafe
             {
-                byte* test_b = (byte*) &test;
+                byte* test_b = (byte*)&test;
                 IsLittleEndian = test_b[0] == 1;
             }
         }
@@ -42,10 +42,12 @@ namespace Unity.Networking.Transport
         {
             return (ushort)(((val & 0xff) << 8) | (val >> 8));
         }
+
         private static uint ByteSwap(uint val)
         {
-            return (uint)(((val & 0xff) << 24) |((val&0xff00)<<8) | ((val>>8)&0xff00) | (val >> 24));
+            return (uint)(((val & 0xff) << 24) | ((val & 0xff00) << 8) | ((val >> 8) & 0xff00) | (val >> 24));
         }
+
         public ushort Port
         {
             get { return IsLittleEndian ? ByteSwap(nbo_port) : nbo_port; }
@@ -54,9 +56,9 @@ namespace Unity.Networking.Transport
 
         public NetworkFamily Family
         {
-            get => (NetworkFamily) family.sa_family;
+            get => (NetworkFamily)family.sa_family;
 #if (UNITY_EDITOR_OSX || ((UNITY_STANDALONE_OSX || UNITY_IOS) && !UNITY_EDITOR))
-            set => family.sa_family = (byte) value;
+            set => family.sa_family = (byte)value;
 #else
             set => family.sa_family = (ushort)value;
 #endif
@@ -75,10 +77,10 @@ namespace Unity.Networking.Transport
             var sai = new sockaddr_in();
 
 #if (UNITY_EDITOR_OSX || ((UNITY_STANDALONE_OSX || UNITY_IOS) && !UNITY_EDITOR))
-            sai.sin_family.sa_family = (byte) NetworkFamily.UdpIpv4;
-            sai.sin_family.sa_len = (byte) sizeof(sockaddr_in);
+            sai.sin_family.sa_family = (byte)NetworkFamily.UdpIpv4;
+            sai.sin_family.sa_len = (byte)sizeof(sockaddr_in);
 #else
-            sai.sin_family.sa_family = (ushort) NetworkFamily.UdpIpv4;
+            sai.sin_family.sa_family = (ushort)NetworkFamily.UdpIpv4;
 #endif
             sai.sin_port = port;
             sai.sin_addr.s_addr = ip;
@@ -94,7 +96,7 @@ namespace Unity.Networking.Transport
         }
 
         public static NetworkEndPoint AnyIpv4 => CreateIpv4(0, 0);
-        public static NetworkEndPoint LoopbackIpv4 => CreateIpv4((127<<24) | 1, 0);
+        public static NetworkEndPoint LoopbackIpv4 => CreateIpv4((127 << 24) | 1, 0);
 
         // Returns true if we can fully parse the input and return a valid endpoint
         public static bool TryParse(string ip, ushort port, out NetworkEndPoint endpoint)
@@ -146,35 +148,35 @@ namespace Unity.Networking.Transport
             return CreateIpv4(0, port);
         }
 
-        public static bool operator ==(NetworkEndPoint lhs, NetworkEndPoint rhs)
+        public static bool operator==(NetworkEndPoint lhs, NetworkEndPoint rhs)
         {
             return lhs.Compare(rhs);
         }
 
-        public static bool operator !=(NetworkEndPoint lhs, NetworkEndPoint rhs)
+        public static bool operator!=(NetworkEndPoint lhs, NetworkEndPoint rhs)
         {
             return !lhs.Compare(rhs);
         }
 
         public override bool Equals(object other)
         {
-            return this == (NetworkEndPoint) other;
+            return this == (NetworkEndPoint)other;
         }
 
         public override int GetHashCode()
         {
-            fixed (byte* p = data)
-                unchecked
+            fixed(byte* p = data)
+            unchecked
+            {
+                var result = 0;
+
+                for (int i = 0; i < Length; i++)
                 {
-                    var result = 0;
-
-                    for (int i = 0; i < Length; i++)
-                    {
-                        result = (result * 31) ^ (int)(IntPtr) (p + 1);
-                    }
-
-                    return result;
+                    result = (result * 31) ^ (int)(IntPtr)(p + 1);
                 }
+
+                return result;
+            }
         }
 
         bool Compare(NetworkEndPoint other)
@@ -182,7 +184,7 @@ namespace Unity.Networking.Transport
             if (length != other.length)
                 return false;
 
-            fixed (void* p = this.data)
+            fixed(void* p = this.data)
             {
                 if (UnsafeUtility.MemCmp(p, other.data, length) == 0)
                     return true;
