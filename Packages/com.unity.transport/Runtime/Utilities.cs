@@ -46,8 +46,8 @@ namespace Unity.Networking.Transport.Utilities
             if (bucket >= m_QueueHeadTail.Length / 2)
             {
                 int oldSize = m_QueueHeadTail.Length;
-                m_QueueHeadTail.ResizeUninitialized((bucket+1)*2);
-                for (;oldSize < m_QueueHeadTail.Length; ++oldSize)
+                m_QueueHeadTail.ResizeUninitialized((bucket + 1) * 2);
+                for (; oldSize < m_QueueHeadTail.Length; ++oldSize)
                     m_QueueHeadTail[oldSize] = 0;
                 m_Queue.ResizeUninitialized((m_QueueHeadTail.Length / 2) * m_MaxItems[0]);
             }
@@ -57,12 +57,12 @@ namespace Unity.Networking.Transport.Utilities
                 // Grow number of items per bucket
                 int oldMax = m_MaxItems[0];
                 while (idx >= m_MaxItems[0])
-                    m_MaxItems[0] = m_MaxItems[0]*2;
+                    m_MaxItems[0] = m_MaxItems[0] * 2;
                 int maxBuckets = m_QueueHeadTail.Length / 2;
                 m_Queue.ResizeUninitialized(maxBuckets * m_MaxItems[0]);
-                for (int b = maxBuckets-1; b >= 0; --b)
+                for (int b = maxBuckets - 1; b >= 0; --b)
                 {
-                    for (int i = m_QueueHeadTail[b*2+1]-1; i >= m_QueueHeadTail[b * 2]; --i)
+                    for (int i = m_QueueHeadTail[b * 2 + 1] - 1; i >= m_QueueHeadTail[b * 2]; --i)
                     {
                         m_Queue[b * m_MaxItems[0] + i] = m_Queue[b * oldMax + i];
                     }
@@ -165,7 +165,7 @@ namespace Unity.Networking.Transport.Utilities
                 distance = lhs - rhs;
             return distance;
         }
-        
+
         public static bool IsNewer(uint current, uint old)
         {
             // Invert the check so same does not count as newer
@@ -175,8 +175,8 @@ namespace Unity.Networking.Transport.Utilities
         public static bool GreaterThan16(ushort lhs, ushort rhs)
         {
             const uint max_sequence_divide_2 = 0x7FFF;
-            return lhs > rhs && lhs - rhs <= (ushort) max_sequence_divide_2 ||
-                   lhs < rhs && rhs - lhs > (ushort) max_sequence_divide_2;
+            return lhs > rhs && lhs - rhs <= (ushort)max_sequence_divide_2 ||
+                lhs < rhs && rhs - lhs > (ushort)max_sequence_divide_2;
         }
 
         public static bool LessThan16(ushort lhs, ushort rhs)
@@ -186,7 +186,7 @@ namespace Unity.Networking.Transport.Utilities
 
         public static bool StalePacket(ushort sequence, ushort oldSequence, ushort windowSize)
         {
-            return LessThan16(sequence, (ushort) (oldSequence - windowSize));
+            return LessThan16(sequence, (ushort)(oldSequence - windowSize));
         }
 
         public static string BitMaskToString(uint mask)

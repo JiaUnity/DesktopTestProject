@@ -3,7 +3,7 @@ Pipelines are a feature which offers layers of functionality on top of the defau
 
 ## How it works
 
-The way it works is that you can add any number of pipeline stages to your transport driver. So when you send a packet it will go to the first stage, then the next and so on until it's sent on the wire. On the receiving side the stages are then processed in reverse order, so the packet is correctly "unpacked" by the stages. 
+The way it works is that you can add any number of pipeline stages to your transport driver. So when you send a packet it will go to the first stage, then the next and so on until it's sent on the wire. On the receiving side the stages are then processed in reverse order, so the packet is correctly "unpacked" by the stages.
 
 For example the first stage might compress a packet and a second stage could add a sequence number (just the packets header). When receiving the packet is first passed through the sequence stage and then decompressed. The sequence stage could drop the packet if it's out of order in which case it leaves the pipeline and doesn't continue to the decompression.
 

@@ -22,7 +22,7 @@ namespace Unity.Networking.Transport.Tests
 
         public InboundBufferVec Send(NetworkPipelineContext ctx, InboundBufferVec inboundBuffer, ref bool needsResume, ref bool needsUpdate)
         {
-            ctx.header.Write((int) 1);
+            ctx.header.Write((int)1);
             return inboundBuffer;
         }
 
@@ -49,7 +49,7 @@ namespace Unity.Networking.Transport.Tests
 
         public InboundBufferVec Send(NetworkPipelineContext ctx, InboundBufferVec inboundBuffer, ref bool needsResume, ref bool needsUpdate)
         {
-            ctx.header.Write((int) 2);
+            ctx.header.Write((int)2);
             return inboundBuffer;
         }
 
@@ -81,9 +81,9 @@ namespace Unity.Networking.Transport.Tests
             for (int i = 0; i < len1; ++i)
                 ctx.internalProcessBuffer[i] = (byte)(inboundBuffer.buffer1[i] ^ 0xff);
             for (int i = 0; i < len2; ++i)
-                ctx.internalProcessBuffer[len1+i] = (byte)(inboundBuffer.buffer2[i] ^ 0xff);
+                ctx.internalProcessBuffer[len1 + i] = (byte)(inboundBuffer.buffer2[i] ^ 0xff);
             var nextInbound = default(InboundBufferVec);
-            nextInbound.buffer1 =  new NativeSlice<byte>(ctx.internalProcessBuffer, 0, len1+len2);
+            nextInbound.buffer1 =  new NativeSlice<byte>(ctx.internalProcessBuffer, 0, len1 + len2);
             return nextInbound;
         }
 
@@ -112,9 +112,9 @@ namespace Unity.Networking.Transport.Tests
             for (int i = 0; i < len1; ++i)
                 ctx.internalProcessBuffer[i] = (byte)(inboundBuffer.buffer1[i] ^ 0xff);
             for (int i = 0; i < len2; ++i)
-                ctx.internalProcessBuffer[len1+i] = (byte)(inboundBuffer.buffer2[i] ^ 0xff);
+                ctx.internalProcessBuffer[len1 + i] = (byte)(inboundBuffer.buffer2[i] ^ 0xff);
             var nextInbound = default(InboundBufferVec);
-            nextInbound.buffer1 =  new NativeSlice<byte>(ctx.internalProcessBuffer, 0, len1+len2);
+            nextInbound.buffer1 =  new NativeSlice<byte>(ctx.internalProcessBuffer, 0, len1 + len2);
             return nextInbound;
         }
 
@@ -141,9 +141,9 @@ namespace Unity.Networking.Transport.Tests
             for (int i = 0; i < len1; ++i)
                 ctx.internalProcessBuffer[i] = (byte)(inboundBuffer.buffer1[i] ^ 0xff);
             for (int i = 0; i < len2; ++i)
-                ctx.internalProcessBuffer[len1+i] = (byte)(inboundBuffer.buffer2[i] ^ 0xff);
+                ctx.internalProcessBuffer[len1 + i] = (byte)(inboundBuffer.buffer2[i] ^ 0xff);
             var nextInbound = default(InboundBufferVec);
-            nextInbound.buffer1 =  new NativeSlice<byte>(ctx.internalProcessBuffer, 0, len1+len2);
+            nextInbound.buffer1 =  new NativeSlice<byte>(ctx.internalProcessBuffer, 0, len1 + len2);
             return nextInbound;
         }
 
@@ -207,7 +207,7 @@ namespace Unity.Networking.Transport.Tests
             *receiveData = 5;
             receiveData++;
             *receiveData = 6;
-            var sharedData = (int*) sharedProcessBuffer.GetUnsafePtr();
+            var sharedData = (int*)sharedProcessBuffer.GetUnsafePtr();
             *sharedData = 7;
             sharedData++;
             *sharedData = 8;
@@ -228,13 +228,13 @@ namespace Unity.Networking.Transport.Tests
             var receiveData = (int*)ctx.internalProcessBuffer.GetUnsafePtr();
             for (int i = 4; i <= 6; ++i)
             {
-                Assert.AreEqual(*receiveData, i*10);
+                Assert.AreEqual(*receiveData, i * 10);
                 receiveData++;
             }
             var sharedData = (int*)ctx.internalSharedProcessBuffer.GetUnsafePtr();
             for (int i = 7; i <= 8; ++i)
             {
-                Assert.AreEqual(*sharedData, i*10);
+                Assert.AreEqual(*sharedData, i * 10);
                 sharedData++;
             }
             return inboundBuffer;
@@ -245,13 +245,13 @@ namespace Unity.Networking.Transport.Tests
             var sendData = (int*)ctx.internalProcessBuffer.GetUnsafePtr();
             for (int i = 1; i <= 3; ++i)
             {
-                Assert.AreEqual(*sendData, i*10);
+                Assert.AreEqual(*sendData, i * 10);
                 sendData++;
             }
             var sharedData = (int*)ctx.internalSharedProcessBuffer.GetUnsafePtr();
             for (int i = 7; i <= 8; ++i)
             {
-                Assert.AreEqual(*sharedData, i*10);
+                Assert.AreEqual(*sharedData, i * 10);
                 sharedData++;
             }
             return inboundBuffer;
@@ -271,7 +271,7 @@ namespace Unity.Networking.Transport.Tests
             *receiveData = 50;
             receiveData++;
             *receiveData = 60;
-            var sharedData = (int*) sharedProcessBuffer.GetUnsafePtr();
+            var sharedData = (int*)sharedProcessBuffer.GetUnsafePtr();
             *sharedData = 70;
             sharedData++;
             *sharedData = 80;
@@ -540,7 +540,7 @@ namespace Unity.Networking.Transport.Tests
             IPCManager.Instance.Initialize(100);
             // NOTE: MaxPacketSize should be 64 for all the tests using simulator except needs to account for header size as well (one test has 2x2B headers)
             var simulatorParams = new SimulatorUtility.Parameters()
-                {MaxPacketSize = 68, MaxPacketCount = 30, PacketDelayMs = 100};
+            {MaxPacketSize = 68, MaxPacketCount = 30, PacketDelayMs = 100};
             m_ServerDriver = new GenericNetworkDriver<IPCSocket, TestNetworkPipelineStageCollection>(simulatorParams);
             m_ServerDriver.Bind(IPCManager.Instance.CreateEndPoint());
             m_ServerDriver.Listen();
@@ -556,6 +556,7 @@ namespace Unity.Networking.Transport.Tests
             m_ServerDriver.Dispose();
             IPCManager.Instance.Destroy();
         }
+
         [Test]
         public void NetworkPipeline_CreatePipelineIsSymetrical()
         {
@@ -563,12 +564,14 @@ namespace Unity.Networking.Transport.Tests
             var serverPipe = m_ServerDriver.CreatePipeline(typeof(TestPipelineStageWithHeader));
             Assert.AreEqual(clientPipe, serverPipe);
         }
+
         [Test]
         public void NetworkPipeline_CreatePipelineAfterConnectFails()
         {
             m_ClientDriver.Connect(m_ServerDriver.LocalEndPoint());
             Assert.Throws<InvalidOperationException>(() => { m_ClientDriver.CreatePipeline(typeof(TestPipelineStageWithHeader)); });
         }
+
         [Test]
         public void NetworkPipeline_CreatePipelineWithInvalidStageFails()
         {
@@ -595,7 +598,7 @@ namespace Unity.Networking.Transport.Tests
 
             // Send message to client
             var strm = new DataStreamWriter(4, Allocator.Temp);
-            strm.Write((int) 42);
+            strm.Write((int)42);
             m_ServerDriver.Send(serverPipe, serverToClient, strm);
             m_ServerDriver.ScheduleUpdate().Complete();
 
@@ -608,6 +611,7 @@ namespace Unity.Networking.Transport.Tests
             var readCtx = default(DataStreamReader.Context);
             Assert.AreEqual(42, readStrm.ReadInt(ref readCtx));
         }
+
         [Test]
         public void NetworkPipeline_CanModifyAndRestoreData()
         {
@@ -628,7 +632,7 @@ namespace Unity.Networking.Transport.Tests
 
             // Send message to client
             var strm = new DataStreamWriter(4, Allocator.Temp);
-            strm.Write((int) 42);
+            strm.Write((int)42);
             m_ServerDriver.Send(serverPipe, serverToClient, strm);
             m_ServerDriver.ScheduleUpdate().Complete();
 
@@ -641,6 +645,7 @@ namespace Unity.Networking.Transport.Tests
             var readCtx = default(DataStreamReader.Context);
             Assert.AreEqual(42, readStrm.ReadInt(ref readCtx));
         }
+
         [Test]
         public void NetworkPipeline_CanModifyAndRestoreDataInPlace()
         {
@@ -661,7 +666,7 @@ namespace Unity.Networking.Transport.Tests
 
             // Send message to client
             var strm = new DataStreamWriter(4, Allocator.Temp);
-            strm.Write((int) 42);
+            strm.Write((int)42);
             m_ServerDriver.Send(serverPipe, serverToClient, strm);
             m_ServerDriver.ScheduleUpdate().Complete();
 
@@ -674,6 +679,7 @@ namespace Unity.Networking.Transport.Tests
             var readCtx = default(DataStreamReader.Context);
             Assert.AreEqual(42, readStrm.ReadInt(ref readCtx));
         }
+
         [Test]
         public void NetworkPipeline_CanModifyData()
         {
@@ -694,7 +700,7 @@ namespace Unity.Networking.Transport.Tests
 
             // Send message to client
             var strm = new DataStreamWriter(4, Allocator.Temp);
-            strm.Write((int) 42);
+            strm.Write((int)42);
             m_ServerDriver.Send(serverPipe, serverToClient, strm);
             m_ServerDriver.ScheduleUpdate().Complete();
 
@@ -705,7 +711,7 @@ namespace Unity.Networking.Transport.Tests
             Assert.AreEqual(NetworkEvent.Type.Data, clientToServer.PopEvent(m_ClientDriver, out readStrm));
             Assert.AreEqual(4, readStrm.Length);
             var readCtx = default(DataStreamReader.Context);
-            Assert.AreEqual(-1^42, readStrm.ReadInt(ref readCtx));
+            Assert.AreEqual(-1 ^ 42, readStrm.ReadInt(ref readCtx));
         }
 
         [Test]
@@ -727,7 +733,7 @@ namespace Unity.Networking.Transport.Tests
 
             // Send message to client
             var strm = new DataStreamWriter(4, Allocator.Temp);
-            strm.Write((int) 42);
+            strm.Write((int)42);
             m_ServerDriver.Send(serverPipe, serverToClient, strm);
             m_ServerDriver.ScheduleUpdate().Complete();
 
@@ -903,7 +909,7 @@ namespace Unity.Networking.Transport.Tests
             {
                 strm.Clear();
                 for (int j = 0; j < 16; j++)
-                    strm.Write((int) i + 1);
+                    strm.Write((int)i + 1);
                 m_ServerDriver.Send(serverPipe, serverToClient, strm);
                 m_ServerDriver.Send(serverPipe, serverToClient2, strm);
             }

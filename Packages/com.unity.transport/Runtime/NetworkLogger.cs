@@ -13,9 +13,9 @@ namespace Unity.Networking.Transport
         public NetworkLogString(string str)
         {
             m_Length = 0;
-            fixed (ushort* dst = m_Message)
+            fixed(ushort* dst = m_Message)
             {
-                fixed (char* src = str)
+                fixed(char* src = str)
                 {
                     for (int i = 0; src[i] != '\0'; ++i)
                         dst[m_Length++] = src[i];
@@ -24,15 +24,16 @@ namespace Unity.Networking.Transport
                 dst[m_Length] = '\0';
             }
         }
+
         private fixed ushort m_Message[512];
         private int m_Length;
         public void Append(ref NetworkLogString str)
         {
             if (m_Length + str.m_Length >= 512)
                 throw new InvalidOperationException("String cannot fit in buffer");
-            fixed (ushort* dst = m_Message)
+            fixed(ushort* dst = m_Message)
             {
-                fixed (ushort* src = str.m_Message)
+                fixed(ushort* src = str.m_Message)
                 {
                     for (int i = 0; i < str.m_Length; ++i)
                         dst[m_Length++] = src[i];
@@ -40,26 +41,29 @@ namespace Unity.Networking.Transport
                 }
             }
         }
+
         public void AppendSpace()
         {
             if (m_Length + 1 >= 512)
                 throw new InvalidOperationException("String cannot fit in buffer");
-            fixed (ushort* dst = m_Message)
+            fixed(ushort* dst = m_Message)
             {
                 dst[m_Length++] = ' ';
                 dst[m_Length] = '\0';
             }
         }
+
         public void AppendComma()
         {
             if (m_Length + 1 >= 512)
                 throw new InvalidOperationException("String cannot fit in buffer");
-            fixed (ushort* dst = m_Message)
+            fixed(ushort* dst = m_Message)
             {
                 dst[m_Length++] = ',';
                 dst[m_Length] = '\0';
             }
         }
+
         public void AppendInt(int val)
         {
             int digits = 1;
@@ -72,16 +76,16 @@ namespace Unity.Networking.Transport
                 ++digits;
                 maxval *= 10;
             }
-            if (m_Length + digits + (isneg?1:0) >= 512)
+            if (m_Length + digits + (isneg ? 1 : 0) >= 512)
                 throw new InvalidOperationException("Int cannot fit in buffer");
-            fixed (ushort* dst = m_Message)
+            fixed(ushort* dst = m_Message)
             {
                 if (isneg)
                     dst[m_Length++] = '-';
                 while (maxval > 1)
                 {
                     maxval /= 10;
-                    dst[m_Length++] = (ushort)('0' + (val/maxval));
+                    dst[m_Length++] = (ushort)('0' + (val / maxval));
                     val = val % maxval;
                 }
                 dst[m_Length] = '\0';
@@ -91,8 +95,8 @@ namespace Unity.Networking.Transport
         public string AsString()
         {
             string temp;
-            fixed (ushort* dst = m_Message)
-                temp = new string((char*)dst);
+            fixed(ushort* dst = m_Message)
+            temp = new string((char*)dst);
             return temp;
         }
     }
@@ -139,19 +143,20 @@ namespace Unity.Networking.Transport
                 var msg = m_LogFile[i];
                 switch (msg.level)
                 {
-                case LogLevel.Error:
-                    UnityEngine.Debug.LogError(msg.msg.AsString());
-                    break;
-                case LogLevel.Warning:
-                    UnityEngine.Debug.LogWarning(msg.msg.AsString());
-                    break;
-                default:
-                    UnityEngine.Debug.Log(msg.msg.AsString());
-                    break;
+                    case LogLevel.Error:
+                        UnityEngine.Debug.LogError(msg.msg.AsString());
+                        break;
+                    case LogLevel.Warning:
+                        UnityEngine.Debug.LogWarning(msg.msg.AsString());
+                        break;
+                    default:
+                        UnityEngine.Debug.Log(msg.msg.AsString());
+                        break;
                 }
             }
             m_LogFile.Clear();
         }
+
         public void Clear()
         {
             m_LogFile.Clear();
@@ -159,16 +164,17 @@ namespace Unity.Networking.Transport
 
         public void Log<T>(LogLevel level, T message) where T : struct, INetworkLogMessage
         {
-            if ((int) level > (int) m_Level)
+            if ((int)level > (int)m_Level)
                 return;
             var msg = default(LogMessage);
             msg.level = level;
             message.Print(ref msg.msg);
             m_PendingLog.Enqueue(msg);
         }
+
         public void Log(LogLevel level, NetworkLogString str)
         {
-            if ((int) level > (int) m_Level)
+            if ((int)level > (int)m_Level)
                 return;
             var msg = new LogMessage {level = level, msg = str};
             m_PendingLog.Enqueue(msg);
@@ -190,16 +196,17 @@ namespace Unity.Networking.Transport
         {
             public void Log<T>(LogLevel level, T message) where T : struct, INetworkLogMessage
             {
-                if ((int) level > (int) m_Level)
+                if ((int)level > (int)m_Level)
                     return;
                 var msg = default(LogMessage);
                 msg.level = level;
                 message.Print(ref msg.msg);
                 m_PendingLog.Enqueue(msg);
             }
+
             public void Log(LogLevel level, NetworkLogString str)
             {
-                if ((int) level > (int) m_Level)
+                if ((int)level > (int)m_Level)
                     return;
                 var msg = new LogMessage {level = level, msg = str};
                 m_PendingLog.Enqueue(msg);

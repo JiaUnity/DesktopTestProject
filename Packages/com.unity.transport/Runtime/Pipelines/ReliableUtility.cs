@@ -32,18 +32,18 @@ namespace Unity.Networking.Transport.Utilities
             public float SmoothedVariance;
             public int ResendTimeout;
         }
-        
+
         public const int NullEntry = -1;
         // The least amount of time we'll wait until a packet resend is performed
         // This is 4x16ms (assumes a 60hz update rate)
         public const int DefaultMinimumResendTime = 64;
         public const int MaximumResendTime = 200;
-        
+
         public enum ErrorCodes
         {
             Stale_Packet = -1,
             Duplicated_Packet = -2,
-            
+
             OutgoingQueueIsFull = -7,
             InsufficientMemory = -8
         }
@@ -80,7 +80,7 @@ namespace Unity.Networking.Transport.Utilities
             public int RemoteTimerDataOffset;
             public int RemoteTimerDataStride;
         }
-        
+
         public struct Context
         {
             public int Capacity;
@@ -108,7 +108,7 @@ namespace Unity.Networking.Transport.Utilities
             public ushort AckedSequenceId;
             public uint AckMask;
         }
-        
+
         [StructLayout(LayoutKind.Sequential)]
         public struct PacketInformation
         {
@@ -148,7 +148,7 @@ namespace Unity.Networking.Transport.Utilities
             }
             return capacityNeeded;
         }
-        
+
         public static int ProcessCapacityNeeded(Parameters param)
         {
             int capacityNeeded;
@@ -156,8 +156,8 @@ namespace Unity.Networking.Transport.Utilities
             {
                 var infoSize = param.WindowSize * UnsafeUtility.SizeOf<PacketInformation>();
                 var dataSize = param.WindowSize * Packet.Length;
-                
-                capacityNeeded = sizeof(Context)+ infoSize + dataSize;
+
+                capacityNeeded = sizeof(Context) + infoSize + dataSize;
             }
             return capacityNeeded;
         }
@@ -167,7 +167,7 @@ namespace Unity.Networking.Transport.Utilities
             InitializeProcessContext(sendBuffer, param);
             InitializeProcessContext(recvBuffer, param);
 
-            SharedContext* notifier = (SharedContext*) sharedBuffer.GetUnsafePtr();
+            SharedContext* notifier = (SharedContext*)sharedBuffer.GetUnsafePtr();
             *notifier = new SharedContext
             {
                 WindowSize = param.WindowSize,
@@ -188,9 +188,9 @@ namespace Unity.Networking.Transport.Utilities
             int totalCapacity = ProcessCapacityNeeded(param);
             if (self.Length != totalCapacity)
             {
-                return (int) ErrorCodes.InsufficientMemory;
+                return (int)ErrorCodes.InsufficientMemory;
             }
-            Context* ctx = (Context*) self.GetUnsafePtr();
+            Context* ctx = (Context*)self.GetUnsafePtr();
 
             ctx->Capacity = param.WindowSize;
             ctx->IndexStride = (UnsafeUtility.SizeOf<PacketInformation>() + 3) & ~3;
@@ -199,7 +199,7 @@ namespace Unity.Networking.Transport.Utilities
             ctx->DataPtrOffset = ctx->IndexPtrOffset + (ctx->IndexStride * ctx->Capacity);
             ctx->Resume = NullEntry;
             ctx->Delivered = NullEntry;
-            
+
             Release(self, 0, param.WindowSize);
             return 0;
         }
@@ -208,29 +208,29 @@ namespace Unity.Networking.Transport.Utilities
         {
             SetPacket(self, sequence, data.GetUnsafeReadOnlyPtr(), data.Length);
         }
-        
+
         public static unsafe void SetPacket(NativeSlice<byte> self, int sequence, void* data, int length)
         {
             byte *ptr = (byte*)self.GetUnsafePtr();
-            Context* ctx = (Context*) ptr;
-            
+            Context* ctx = (Context*)ptr;
+
             if (length > ctx->DataStride)
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 throw new OverflowException();
 #else
                 return;
 #endif
-            
+
             var index = sequence % ctx->Capacity;
 
-            PacketInformation* info = GetPacketInformation(self, sequence); 
+            PacketInformation* info = GetPacketInformation(self, sequence);
             info->SequenceId = sequence;
             info->Size = length;
             info->SendTime = -1;          // Not used for packets queued for resume receive
 
             var offset = ctx->DataPtrOffset + (index * ctx->DataStride);
             void* dataPtr = (ptr + offset);
-            
+
             UnsafeUtility.MemCpy(dataPtr, data, length);
         }
 
@@ -247,9 +247,9 @@ namespace Unity.Networking.Transport.Utilities
         public static unsafe void SetHeaderAndPacket(NativeSlice<byte> self, int sequence, PacketHeader header, InboundBufferVec data, long timestamp)
         {
             byte *ptr = (byte*)self.GetUnsafePtr();
-            Context* ctx = (Context*) ptr;
+            Context* ctx = (Context*)ptr;
             int totalSize = data.buffer1.Length + data.buffer2.Length;
-            
+
             if (totalSize > ctx->DataStride)
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 throw new OverflowException();
@@ -257,7 +257,7 @@ namespace Unity.Networking.Transport.Utilities
                 return;
 #endif
             var index = sequence % ctx->Capacity;
-                
+
             PacketInformation* info = GetPacketInformation(self, sequence);
             info->SequenceId = sequence;
             info->Size = totalSize;
@@ -277,25 +277,25 @@ namespace Unity.Networking.Transport.Utilities
         public static unsafe PacketInformation* GetPacketInformation(NativeSlice<byte> self, int sequence)
         {
             byte *ptr = (byte*)self.GetUnsafePtr();
-            Context* ctx = (Context*) ptr;
+            Context* ctx = (Context*)ptr;
             var index = sequence % ctx->Capacity;
 
-            return (PacketInformation*) ((ptr + ctx->IndexPtrOffset) + (index * ctx->IndexStride));
+            return (PacketInformation*)((ptr + ctx->IndexPtrOffset) + (index * ctx->IndexStride));
         }
-        
+
         public static unsafe Packet* GetPacket(NativeSlice<byte> self, int sequence)
         {
             byte *ptr = (byte*)self.GetUnsafePtr();
-            Context* ctx = (Context*) ptr;
+            Context* ctx = (Context*)ptr;
             var index = sequence % ctx->Capacity;
 
             var offset = ctx->DataPtrOffset + (index * ctx->DataStride);
-            return (Packet*) (ptr + offset);
+            return (Packet*)(ptr + offset);
         }
 
         public static unsafe bool TryAquire(NativeSlice<byte> self, int sequence)
         {
-            Context* ctx = (Context*) self.GetUnsafePtr();
+            Context* ctx = (Context*)self.GetUnsafePtr();
 
             var index = sequence % ctx->Capacity;
 
@@ -315,29 +315,29 @@ namespace Unity.Networking.Transport.Utilities
 
         public static unsafe void Release(NativeSlice<byte> self, int start_sequence, int count)
         {
-            Context* ctx = (Context*) self.GetUnsafePtr();
+            Context* ctx = (Context*)self.GetUnsafePtr();
             var index = start_sequence % ctx->Capacity;
             for (int i = 0; i < count; i++)
             {
                 SetIndex(self, index + i, NullEntry);
             }
         }
-        
+
         static unsafe void SetIndex(NativeSlice<byte> self, int index, int sequence)
         {
             byte *ptr = (byte*)self.GetUnsafePtr();
-            Context* ctx = (Context*) ptr;
+            Context* ctx = (Context*)ptr;
 
-            int* value = (int*) ((ptr + ctx->IndexPtrOffset) + (index * ctx->IndexStride));
+            int* value = (int*)((ptr + ctx->IndexPtrOffset) + (index * ctx->IndexStride));
             *value = sequence;
         }
 
         static unsafe int GetIndex(NativeSlice<byte> self, int index)
         {
             byte *ptr = (byte*)self.GetUnsafePtr();
-            Context* ctx = (Context*) ptr;
+            Context* ctx = (Context*)ptr;
 
-            int* value = (int*) ((ptr + ctx->IndexPtrOffset) + (index * ctx->IndexStride));
+            int* value = (int*)((ptr + ctx->IndexPtrOffset) + (index * ctx->IndexStride));
             return *value;
         }
 
@@ -353,8 +353,8 @@ namespace Unity.Networking.Transport.Utilities
         /// <returns></returns>
         public static unsafe bool ReleaseOrResumePackets(NetworkPipelineContext context)
         {
-            SharedContext* reliable = (SharedContext*) context.internalSharedProcessBuffer.GetUnsafePtr();
-            Context* ctx = (Context*) context.internalProcessBuffer.GetUnsafePtr();
+            SharedContext* reliable = (SharedContext*)context.internalSharedProcessBuffer.GetUnsafePtr();
+            Context* ctx = (Context*)context.internalProcessBuffer.GetUnsafePtr();
 
             // Last sequence ID and ackmask we received from the remote peer, these are confirmed delivered packets
             var lastReceivedAckMask = reliable->SentPackets.AckMask;
@@ -363,7 +363,7 @@ namespace Unity.Networking.Transport.Utilities
             // To deal with wrapping, chop off the upper half of the sequence ID and multiply by window size, it
             // will then never wrap but will map to the correct index in the packet storage, wrapping happens when
             // sending low sequence IDs (since it checks sequence IDs backwards in time).
-            var sequence = (ushort)(reliable->WindowSize * ((1 - lastOwnSequenceIdAckedByRemote)>>15));
+            var sequence = (ushort)(reliable->WindowSize * ((1 - lastOwnSequenceIdAckedByRemote) >> 15));
 
             // Check each slot in the window, starting from the sequence ID calculated above (this isn't the
             // latest sequence ID though as it was adjusted to avoid wrapping)
@@ -382,7 +382,7 @@ namespace Unity.Networking.Transport.Utilities
                     {
                         Release(context.internalProcessBuffer, info->SequenceId);
                         info->SendTime = -1;
-                        sequence = (ushort) (sequence - 1);
+                        sequence = (ushort)(sequence - 1);
                         continue;
                     }
                     var timeToResend = CurrentResendTime(context.internalSharedProcessBuffer);
@@ -391,7 +391,7 @@ namespace Unity.Networking.Transport.Utilities
                         ctx->Resume = info->SequenceId;
                     }
                 }
-                sequence = (ushort) (sequence - 1);
+                sequence = (ushort)(sequence - 1);
             }
             return ctx->Resume != NullEntry;
         }
@@ -409,10 +409,10 @@ namespace Unity.Networking.Transport.Utilities
         public static unsafe NativeSlice<byte> ResumeReceive(NetworkPipelineContext context, int startSequence, ref bool needsResume)
         {
             if (startSequence == NullEntry) return default(NativeSlice<byte>);
-            
-            SharedContext* shared = (SharedContext*) context.internalSharedProcessBuffer.GetUnsafePtr();
+
+            SharedContext* shared = (SharedContext*)context.internalSharedProcessBuffer.GetUnsafePtr();
             Context* reliable = (Context*)context.internalProcessBuffer.GetUnsafePtr();
-            
+
             reliable->Resume = NullEntry;
 
             PacketInformation* info = GetPacketInformation(context.internalProcessBuffer, startSequence);
@@ -422,7 +422,7 @@ namespace Unity.Networking.Transport.Utilities
                 var offset = reliable->DataPtrOffset + ((startSequence % reliable->Capacity) * reliable->DataStride);
                 NativeSlice<byte> slice = new NativeSlice<byte>(context.internalProcessBuffer, offset, info->Size);
                 reliable->Delivered = startSequence;
-                
+
                 if ((ushort)(startSequence + 1) <= latestReceivedPacket)
                 {
                     reliable->Resume = (ushort)(startSequence + 1);
@@ -445,26 +445,26 @@ namespace Unity.Networking.Transport.Utilities
         /// <exception cref="ApplicationException"></exception>
         public static unsafe NativeSlice<byte> ResumeSend(NetworkPipelineContext context, out PacketHeader header, ref bool needsResume)
         {
-            SharedContext* reliable = (SharedContext*) context.internalSharedProcessBuffer.GetUnsafePtr();
+            SharedContext* reliable = (SharedContext*)context.internalSharedProcessBuffer.GetUnsafePtr();
             Context* ctx = (Context*)context.internalProcessBuffer.GetUnsafePtr();
-            
+
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             if (ctx->Resume == NullEntry)
                 throw new ApplicationException("This function should not be called unless there is data in resume");
 #endif
-            
-            var sequence = (ushort) ctx->Resume;
+
+            var sequence = (ushort)ctx->Resume;
 
             PacketInformation* information;
             information = GetPacketInformation(context.internalProcessBuffer, sequence);
             // Reset the resend timer
             information->SendTime = context.timestamp;
-            
+
             Packet *packet = GetPacket(context.internalProcessBuffer, sequence);
             header = packet->Header;
 
             // Update acked/ackmask to latest values
-            header.AckedSequenceId = (ushort) reliable->ReceivedPackets.Sequence;
+            header.AckedSequenceId = (ushort)reliable->ReceivedPackets.Sequence;
             header.AckMask = reliable->ReceivedPackets.AckMask;
 
             var offset = (ctx->DataPtrOffset + ((sequence % ctx->Capacity) * ctx->DataStride)) + UnsafeUtility.SizeOf<PacketHeader>();
@@ -499,9 +499,9 @@ namespace Unity.Networking.Transport.Utilities
         /// <returns>Sequence ID assigned to this packet.</returns>
         public static unsafe int Write(NetworkPipelineContext context, InboundBufferVec inboundBuffer, ref PacketHeader header)
         {
-            SharedContext* reliable = (SharedContext*) context.internalSharedProcessBuffer.GetUnsafePtr();
+            SharedContext* reliable = (SharedContext*)context.internalSharedProcessBuffer.GetUnsafePtr();
 
-            var sequence = (ushort) reliable->SentPackets.Sequence;
+            var sequence = (ushort)reliable->SentPackets.Sequence;
 
             if (!TryAquire(context.internalProcessBuffer, sequence))
             {
@@ -511,7 +511,7 @@ namespace Unity.Networking.Transport.Utilities
             reliable->stats.PacketsSent++;
 
             header.SequenceId = sequence;
-            header.AckedSequenceId = (ushort) reliable->ReceivedPackets.Sequence;
+            header.AckedSequenceId = (ushort)reliable->ReceivedPackets.Sequence;
             header.AckMask = reliable->ReceivedPackets.AckMask;
 
             reliable->ReceivedPackets.Acked = reliable->ReceivedPackets.Sequence;
@@ -520,7 +520,7 @@ namespace Unity.Networking.Transport.Utilities
             header.ProcessingTime =
                 CalculateProcessingTime(context.internalSharedProcessBuffer, header.AckedSequenceId, context.timestamp);
 
-            reliable->SentPackets.Sequence = (ushort) (reliable->SentPackets.Sequence + 1);
+            reliable->SentPackets.Sequence = (ushort)(reliable->SentPackets.Sequence + 1);
             SetHeaderAndPacket(context.internalProcessBuffer, sequence, header, inboundBuffer, context.timestamp);
 
             StoreTimestamp(context.internalSharedProcessBuffer, sequence, context.timestamp);
@@ -537,10 +537,10 @@ namespace Unity.Networking.Transport.Utilities
         /// <returns></returns>
         public static unsafe void WriteAckPacket(NetworkPipelineContext context, ref PacketHeader header)
         {
-            SharedContext* reliable = (SharedContext*) context.internalSharedProcessBuffer.GetUnsafePtr();
+            SharedContext* reliable = (SharedContext*)context.internalSharedProcessBuffer.GetUnsafePtr();
 
             header.Type = (ushort)PacketType.Ack;
-            header.AckedSequenceId = (ushort) reliable->ReceivedPackets.Sequence;
+            header.AckedSequenceId = (ushort)reliable->ReceivedPackets.Sequence;
             header.AckMask = reliable->ReceivedPackets.AckMask;
             header.ProcessingTime =
                 CalculateProcessingTime(context.internalSharedProcessBuffer, header.AckedSequenceId, context.timestamp);
@@ -558,7 +558,7 @@ namespace Unity.Networking.Transport.Utilities
 
         public static unsafe void StoreReceiveTimestamp(NativeSlice<byte> sharedBuffer, ushort sequenceId, long timestamp, ushort processingTime)
         {
-            var sharedCtx = (SharedContext*) sharedBuffer.GetUnsafePtr();
+            var sharedCtx = (SharedContext*)sharedBuffer.GetUnsafePtr();
             var rttInfo = sharedCtx->RttInfo;
             var timerData = GetLocalPacketTimer(sharedBuffer, sequenceId);
             if (timerData != null && timerData->SequenceId == sequenceId)
@@ -587,7 +587,7 @@ namespace Unity.Networking.Transport.Utilities
 
         static unsafe int CurrentResendTime(NativeSlice<byte> sharedBuffer)
         {
-            var sharedCtx = (SharedContext*) sharedBuffer.GetUnsafePtr();
+            var sharedCtx = (SharedContext*)sharedBuffer.GetUnsafePtr();
             if (sharedCtx->RttInfo.ResendTimeout > MaximumResendTime)
                 return MaximumResendTime;
             return Math.Max(sharedCtx->RttInfo.ResendTimeout, sharedCtx->MinimumResendTime);
@@ -598,24 +598,24 @@ namespace Unity.Networking.Transport.Utilities
             // Look up previously recorded receive timestamp, subtract that from current timestamp and return as processing time
             var timerData = GetRemotePacketTimer(sharedBuffer, sequenceId);
             if (timerData != null && timerData->SequenceId == sequenceId)
-                return Math.Min((ushort) (timestamp - timerData->ReceiveTime), ushort.MaxValue);
+                return Math.Min((ushort)(timestamp - timerData->ReceiveTime), ushort.MaxValue);
             return 0;
         }
 
         public static unsafe PacketTimers* GetLocalPacketTimer(NativeSlice<byte> sharedBuffer, ushort sequenceId)
         {
-            var sharedCtx = (SharedContext*) sharedBuffer.GetUnsafePtr();
+            var sharedCtx = (SharedContext*)sharedBuffer.GetUnsafePtr();
             var index = sequenceId % sharedCtx->WindowSize;
             var timerPtr = (long)sharedBuffer.GetUnsafePtr() + sharedCtx->TimerDataOffset + sharedCtx->TimerDataStride * index;
-            return (PacketTimers*) timerPtr;
+            return (PacketTimers*)timerPtr;
         }
 
         public static unsafe PacketTimers* GetRemotePacketTimer(NativeSlice<byte> sharedBuffer, ushort sequenceId)
         {
-            var sharedCtx = (SharedContext*) sharedBuffer.GetUnsafePtr();
+            var sharedCtx = (SharedContext*)sharedBuffer.GetUnsafePtr();
             var index = sequenceId % sharedCtx->WindowSize;
             var timerPtr = (long)sharedBuffer.GetUnsafePtr() + sharedCtx->RemoteTimerDataOffset + sharedCtx->RemoteTimerDataStride * index;
-            return (PacketTimers*) timerPtr;
+            return (PacketTimers*)timerPtr;
         }
 
         /// <summary>
@@ -628,20 +628,20 @@ namespace Unity.Networking.Transport.Utilities
         /// <returns>Sequence ID of the received packet.</returns>
         public static unsafe int Read(NetworkPipelineContext context, PacketHeader header)
         {
-            SharedContext* reliable = (SharedContext*) context.internalSharedProcessBuffer.GetUnsafePtr();
+            SharedContext* reliable = (SharedContext*)context.internalSharedProcessBuffer.GetUnsafePtr();
 
             reliable->stats.PacketsReceived++;
             if (SequenceHelpers.StalePacket(
                 header.SequenceId,
-                (ushort) (reliable->ReceivedPackets.Sequence + 1),
-                (ushort) reliable->WindowSize))
+                (ushort)(reliable->ReceivedPackets.Sequence + 1),
+                (ushort)reliable->WindowSize))
             {
                 reliable->stats.PacketsStale++;
-                return (int) ErrorCodes.Stale_Packet;
+                return (int)ErrorCodes.Stale_Packet;
             }
 
             var window = reliable->WindowSize - 1;
-            if (SequenceHelpers.GreaterThan16((ushort) (header.SequenceId + 1), (ushort) reliable->ReceivedPackets.Sequence))
+            if (SequenceHelpers.GreaterThan16((ushort)(header.SequenceId + 1), (ushort)reliable->ReceivedPackets.Sequence))
             {
                 int distance = SequenceHelpers.AbsDistance(header.SequenceId, (ushort)reliable->ReceivedPackets.Sequence);
 
@@ -666,7 +666,7 @@ namespace Unity.Networking.Transport.Utilities
 
                 reliable->ReceivedPackets.Sequence = header.SequenceId;
             }
-            else if (SequenceHelpers.LessThan16(header.SequenceId, (ushort) reliable->ReceivedPackets.Sequence))
+            else if (SequenceHelpers.LessThan16(header.SequenceId, (ushort)reliable->ReceivedPackets.Sequence))
             {
                 int distance = SequenceHelpers.AbsDistance(header.SequenceId, (ushort)reliable->ReceivedPackets.Sequence);
                 // If this is a resent packet the distance will seem very big and needs to be calculated again with adjustment for wrapping
@@ -677,11 +677,11 @@ namespace Unity.Networking.Transport.Utilities
                 if ((ackBit & reliable->ReceivedPackets.AckMask) != 0)
                 {
                     reliable->stats.PacketsDuplicated++;
-                    return (int) ErrorCodes.Duplicated_Packet;
+                    return (int)ErrorCodes.Duplicated_Packet;
                 }
 
                 reliable->stats.PacketsOutOfOrder++;
-                reliable->ReceivedPackets.AckMask |= (uint) ackBit;
+                reliable->ReceivedPackets.AckMask |= (uint)ackBit;
             }
 
             // Store receive timestamp for remote sequence ID we just received
@@ -694,14 +694,14 @@ namespace Unity.Networking.Transport.Utilities
 
         public static unsafe void ReadAckPacket(NetworkPipelineContext context, PacketHeader header)
         {
-            SharedContext* reliable = (SharedContext*) context.internalSharedProcessBuffer.GetUnsafePtr();
+            SharedContext* reliable = (SharedContext*)context.internalSharedProcessBuffer.GetUnsafePtr();
 
             // Store receive timestamp for our acked sequence ID with remote processing time
             StoreReceiveTimestamp(context.internalSharedProcessBuffer, header.AckedSequenceId, context.timestamp, header.ProcessingTime);
 
             // Check the distance of the acked seqId in the header, if it's too far away from last acked packet we
             // can't process it and add it to the ack mask
-            if (!SequenceHelpers.GreaterThan16(header.AckedSequenceId, (ushort) reliable->SentPackets.Acked))
+            if (!SequenceHelpers.GreaterThan16(header.AckedSequenceId, (ushort)reliable->SentPackets.Acked))
             {
                 // No new acks;
                 return;
@@ -713,8 +713,8 @@ namespace Unity.Networking.Transport.Utilities
 
         public static unsafe bool ShouldSendAck(NetworkPipelineContext ctx)
         {
-            var reliable = (Context*) ctx.internalProcessBuffer.GetUnsafePtr();
-            var shared = (SharedContext*) ctx.internalSharedProcessBuffer.GetUnsafePtr();
+            var reliable = (Context*)ctx.internalProcessBuffer.GetUnsafePtr();
+            var shared = (SharedContext*)ctx.internalSharedProcessBuffer.GetUnsafePtr();
 
             // If more than one full frame (timestamp - prevTimestamp = one frame) has elapsed then send ack packet
             // and if the last received sequence ID has not been acked yet
@@ -731,7 +731,7 @@ namespace Unity.Networking.Transport.Utilities
             NativeSlice<byte> sendBuffer = default(NativeSlice<byte>);
             NativeSlice<byte> sharedBuffer = default(NativeSlice<byte>);
             driver.GetPipelineBuffers(pipeline, stageId, con, ref receiveBuffer, ref sendBuffer, ref sharedBuffer);
-            var sharedCtx = (ReliableUtility.SharedContext*) sharedBuffer.GetUnsafePtr();
+            var sharedCtx = (ReliableUtility.SharedContext*)sharedBuffer.GetUnsafePtr();
             sharedCtx->MinimumResendTime = value;
         }
 
@@ -742,8 +742,8 @@ namespace Unity.Networking.Transport.Utilities
             NativeSlice<byte> sendBuffer = default(NativeSlice<byte>);
             NativeSlice<byte> sharedBuffer = default(NativeSlice<byte>);
             driver.GetPipelineBuffers(pipeline, stageId, con, ref receiveBuffer, ref sendBuffer, ref sharedBuffer);
-            var sharedCtx = (ReliableUtility.SharedContext*) sharedBuffer.GetUnsafePtr();
+            var sharedCtx = (ReliableUtility.SharedContext*)sharedBuffer.GetUnsafePtr();
             sharedCtx->MinimumResendTime = value;
         }
     }
- }
+}

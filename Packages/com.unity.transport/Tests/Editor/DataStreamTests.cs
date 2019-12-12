@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Unity.Networking.Transport.Utilities;
 using NUnit.Framework;
 using UnityEngine;
@@ -15,8 +15,8 @@ namespace Unity.Networking.Transport.Tests
         {
             byte[] byteArray =
             {
-                (byte) 's', (byte) 'o', (byte) 'm', (byte) 'e',
-                (byte) ' ', (byte) 'd', (byte) 'a', (byte) 't', (byte) 'a'
+                (byte)'s', (byte)'o', (byte)'m', (byte)'e',
+                (byte)' ', (byte)'d', (byte)'a', (byte)'t', (byte)'a'
             };
 
             DataStreamWriter dataStream;
@@ -39,9 +39,9 @@ namespace Unity.Networking.Transport.Tests
         public void CreateStreamWithSourceByteArray()
         {
             byte[] byteArray = new byte[100];
-            byteArray[0] = (byte) 'a';
-            byteArray[1] = (byte) 'b';
-            byteArray[2] = (byte) 'c';
+            byteArray[0] = (byte)'a';
+            byteArray[1] = (byte)'b';
+            byteArray[2] = (byte)'c';
 
             DataStreamWriter dataStream;
             using (dataStream = new DataStreamWriter(byteArray.Length, Allocator.Persistent))
@@ -64,9 +64,9 @@ namespace Unity.Networking.Transport.Tests
             DataStreamWriter dataStream;
             using (dataStream = new DataStreamWriter(3, Allocator.Persistent))
             {
-                dataStream.Write((byte) 'a');
-                dataStream.Write((byte) 'b');
-                dataStream.Write((byte) 'c');
+                dataStream.Write((byte)'a');
+                dataStream.Write((byte)'b');
+                dataStream.Write((byte)'c');
                 var reader = new DataStreamReader(dataStream, 0, dataStream.Length);
                 var readerCtx = default(DataStreamReader.Context);
                 reader.ReadBytesIntoArray(ref readerCtx, ref byteArray, dataStream.Length);
@@ -83,12 +83,12 @@ namespace Unity.Networking.Transport.Tests
         {
             using (var dataStream = new DataStreamWriter(100, Allocator.Persistent))
             {
-                dataStream.Write((byte) 'a');
-                dataStream.Write((byte) 'b');
-                dataStream.Write((byte) 'c');
-                dataStream.Write((byte) 'd');
-                dataStream.Write((byte) 'e');
-                dataStream.Write((byte) 'f');
+                dataStream.Write((byte)'a');
+                dataStream.Write((byte)'b');
+                dataStream.Write((byte)'c');
+                dataStream.Write((byte)'d');
+                dataStream.Write((byte)'e');
+                dataStream.Write((byte)'f');
                 var reader = new DataStreamReader(dataStream, 3, 3);
                 var readerCtx = default(DataStreamReader.Context);
                 Assert.AreEqual('d', reader.ReadByte(ref readerCtx));
@@ -104,18 +104,18 @@ namespace Unity.Networking.Transport.Tests
 
             using (var dataStream = new DataStreamWriter(100, Allocator.Persistent))
             {
-                dataStream.Write((byte) 'a');
-                dataStream.Write((byte) 'b');
-                dataStream.Write((byte) 'c');
-                dataStream.Write((byte) 'd');
-                dataStream.Write((byte) 'e');
-                dataStream.Write((byte) 'f');
+                dataStream.Write((byte)'a');
+                dataStream.Write((byte)'b');
+                dataStream.Write((byte)'c');
+                dataStream.Write((byte)'d');
+                dataStream.Write((byte)'e');
+                dataStream.Write((byte)'f');
 
                 dataStream.CopyTo(2, 3, ref byteArray);
-                Assert.AreEqual(byteArray[0], (byte) 'c');
-                Assert.AreEqual(byteArray[1], (byte) 'd');
-                Assert.AreEqual(byteArray[2], (byte) 'e');
-                Assert.AreNotEqual(byteArray[3], (byte) 'f');
+                Assert.AreEqual(byteArray[0], (byte)'c');
+                Assert.AreEqual(byteArray[1], (byte)'d');
+                Assert.AreEqual(byteArray[2], (byte)'e');
+                Assert.AreNotEqual(byteArray[3], (byte)'f');
             }
         }
 
@@ -125,18 +125,18 @@ namespace Unity.Networking.Transport.Tests
             using (var dataStream = new DataStreamWriter(100, Allocator.Persistent))
             using (var nativeArray = new NativeArray<byte>(100, Allocator.Persistent))
             {
-                dataStream.Write((byte) 'a');
-                dataStream.Write((byte) 'b');
-                dataStream.Write((byte) 'c');
-                dataStream.Write((byte) 'd');
-                dataStream.Write((byte) 'e');
-                dataStream.Write((byte) 'f');
+                dataStream.Write((byte)'a');
+                dataStream.Write((byte)'b');
+                dataStream.Write((byte)'c');
+                dataStream.Write((byte)'d');
+                dataStream.Write((byte)'e');
+                dataStream.Write((byte)'f');
 
                 dataStream.CopyTo(2, 3, nativeArray);
-                Assert.AreEqual(nativeArray[0], (byte) 'c');
-                Assert.AreEqual(nativeArray[1], (byte) 'd');
-                Assert.AreEqual(nativeArray[2], (byte) 'e');
-                Assert.AreNotEqual(nativeArray[3], (byte) 'f');
+                Assert.AreEqual(nativeArray[0], (byte)'c');
+                Assert.AreEqual(nativeArray[1], (byte)'d');
+                Assert.AreEqual(nativeArray[2], (byte)'e');
+                Assert.AreNotEqual(nativeArray[3], (byte)'f');
             }
         }
 
@@ -151,7 +151,7 @@ namespace Unity.Networking.Transport.Tests
                 for (uint i = 0; i < count; ++i)
                     dataStream.WritePackedUInt(base_val + i, compressionModel);
 
-                dataStream.Write((int) 1979);
+                dataStream.Write((int)1979);
                 dataStream.Flush();
                 var reader = new DataStreamReader(dataStream, 0, dataStream.Length);
                 var ctx = default(DataStreamReader.Context);
@@ -163,6 +163,7 @@ namespace Unity.Networking.Transport.Tests
                 Assert.AreEqual(1979, reader.ReadInt(ref ctx));
             }
         }
+
         [Test]
         public void ReadWritePackedInt()
         {
@@ -174,7 +175,7 @@ namespace Unity.Networking.Transport.Tests
                 for (int i = 0; i < count; ++i)
                     dataStream.WritePackedInt(base_val + i, compressionModel);
 
-                dataStream.Write((int) 1979);
+                dataStream.Write((int)1979);
                 dataStream.Flush();
                 var reader = new DataStreamReader(dataStream, 0, dataStream.Length);
                 var ctx = default(DataStreamReader.Context);
@@ -186,6 +187,7 @@ namespace Unity.Networking.Transport.Tests
                 Assert.AreEqual(1979, reader.ReadInt(ref ctx));
             }
         }
+
         [Test]
         public void ReadWritePackedUIntWithDeferred()
         {
@@ -194,13 +196,13 @@ namespace Unity.Networking.Transport.Tests
             {
                 uint base_val = 2000;
                 uint count = 277;
-                var def = dataStream.Write((int) 0);
+                var def = dataStream.Write((int)0);
                 for (uint i = 0; i < count; ++i)
                     dataStream.WritePackedUInt(base_val + i, compressionModel);
 
                 dataStream.Flush();
                 def.Update(1979);
-                def = dataStream.Write((int) 0);
+                def = dataStream.Write((int)0);
                 def.Update(1979);
                 dataStream.Flush();
                 var reader = new DataStreamReader(dataStream, 0, dataStream.Length);

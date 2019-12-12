@@ -1,4 +1,4 @@
-﻿using Unity.Burst;
+using Unity.Burst;
 using UnityEngine;
 using Unity.Networking.Transport;
 using Unity.Collections;
@@ -154,11 +154,13 @@ public class MyPingServerBehavior : MonoBehaviour
         // If at least one client is connected, update the activity so the server does not shut down
         if (m_connections.Length > 0)
             DedicatedServerConfig.UpdateLastActivity();
-        var updateJob = new DriverUpdateJob {
+        var updateJob = new DriverUpdateJob
+        {
             driver = m_driver,
             connections = m_connections
         };
-        var pongJob = new PongJob {
+        var pongJob = new PongJob
+        {
             driver = m_driver.ToConcurrent(),
             id = m_id,
 #if ENABLE_IL2CPP
@@ -186,5 +188,3 @@ public class MyPingServerBehavior : MonoBehaviour
         Debug.Log(msg);
     }
 }
-
-

@@ -61,7 +61,7 @@ public struct PipelineStageCollection : INetworkPipelineStageCollection
                 if (m_PipelineTypes[i].generate)
                 {
                     content += "        if (type == typeof(" + m_PipelineTypes[i].type.Name + "))\n            return " +
-                               stageIdx + ";\n";
+                        stageIdx + ";\n";
                     ++stageIdx;
                 }
             }
@@ -90,7 +90,7 @@ public struct PipelineStageCollection : INetworkPipelineStageCollection
 
             content += GenerateVoidInvoke(
                 "void InvokeInitialize(int pipelineStageId, NativeSlice<byte> sendProcessBuffer, NativeSlice<byte> recvProcessBuffer, NativeSlice<byte> sharedStateBuffer)",
-            "InitializeConnection(sendProcessBuffer, recvProcessBuffer, sharedStateBuffer)");
+                "InitializeConnection(sendProcessBuffer, recvProcessBuffer, sharedStateBuffer)");
 
             content += GenerateInvoke(
                 "InboundBufferVec InvokeSend(int pipelineStageId, NetworkPipelineContext ctx, InboundBufferVec inboundBuffer, ref bool needsResume, ref bool needsUpdate)",
@@ -146,6 +146,7 @@ public struct PipelineStageCollection : INetworkPipelineStageCollection
         content += "    }\n";
         return content;
     }
+
     string GenerateVoidInvoke(string function, string perTypeInvoke)
     {
         var content = "    public " + function + "\n    {\n";
@@ -175,7 +176,6 @@ public struct PipelineStageCollection : INetworkPipelineStageCollection
             try
             {
                 allTypes = assembly.GetTypes();
-
             }
             catch (ReflectionTypeLoadException e)
             {
@@ -196,4 +196,3 @@ public struct PipelineStageCollection : INetworkPipelineStageCollection
         }
     }
 }
-

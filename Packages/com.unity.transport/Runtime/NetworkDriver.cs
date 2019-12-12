@@ -65,7 +65,7 @@ namespace Unity.Networking.Transport
                 slice = default(DataStreamReader);
                 if (connectionId.m_NetworkId < 0 || connectionId.m_NetworkId >= m_ConnectionList.Length ||
                     m_ConnectionList[connectionId.m_NetworkId].Version != connectionId.m_NetworkVersion)
-                    return (int) NetworkEvent.Type.Empty;
+                    return (int)NetworkEvent.Type.Empty;
                 var type = m_EventQueue.PopEventForConnection(connectionId.m_NetworkId, out offset, out size);
                 if (size > 0)
                     slice = new DataStreamReader(m_DataStream, offset, size);
@@ -76,7 +76,7 @@ namespace Unity.Networking.Transport
             {
                 if (strm.IsCreated && strm.Length > 0)
                 {
-                    return Send(pipe, id, (IntPtr) strm.GetUnsafeReadOnlyPtr(), strm.Length);
+                    return Send(pipe, id, (IntPtr)strm.GetUnsafeReadOnlyPtr(), strm.Length);
                 }
                 return 0;
             }
@@ -86,7 +86,7 @@ namespace Unity.Networking.Transport
                 if (pipe.Id > 0)
                 {
                     m_DefaultHeaderFlags = UdpCHeader.HeaderFlags.HasPipeline;
-                    var slice = NativeSliceUnsafeUtility.ConvertExistingDataToNativeSlice<byte>((void*) data, 1, len);
+                    var slice = NativeSliceUnsafeUtility.ConvertExistingDataToNativeSlice<byte>((void*)data, 1, len);
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                     var safety = AtomicSafetyHandle.Create();
                     AtomicSafetyHandle.SetAllowSecondaryVersionWriting(safety, false);
@@ -114,7 +114,7 @@ namespace Unity.Networking.Transport
                 // update last attempt;
                 var header = new UdpCHeader
                 {
-                    Type = (int) UdpCProtocol.Data,
+                    Type = (int)UdpCProtocol.Data,
                     SessionToken = connection.SendToken,
                     Flags = m_DefaultHeaderFlags
                 };
@@ -137,6 +137,7 @@ namespace Unity.Networking.Transport
                 }
                 return m_NetworkInterface.SendMessage(iov, 2, ref connection.Address);
             }
+
             public unsafe int Send(NetworkConnection id, network_iovec* dataIov, int dataIovLen)
             {
                 if (id.m_NetworkId < 0 || id.m_NetworkId >= m_ConnectionList.Length)
@@ -153,12 +154,12 @@ namespace Unity.Networking.Transport
                 // update last attempt;
                 var header = new UdpCHeader
                 {
-                    Type = (int) UdpCProtocol.Data,
+                    Type = (int)UdpCProtocol.Data,
                     SessionToken = connection.SendToken,
                     Flags = m_DefaultHeaderFlags
                 };
 
-                var iov = stackalloc network_iovec[2+dataIovLen];
+                var iov = stackalloc network_iovec[2 + dataIovLen];
                 iov[0].buf = header.Data;
                 iov[0].len = UdpCHeader.Length;
 
@@ -196,19 +197,19 @@ namespace Unity.Networking.Transport
             public ushort SendToken;
             public byte DidReceiveData;
 
-            public static bool operator ==(Connection lhs, Connection rhs)
+            public static bool operator==(Connection lhs, Connection rhs)
             {
                 return lhs.Id == rhs.Id && lhs.Version == rhs.Version && lhs.Address == rhs.Address;
             }
 
-            public static bool operator !=(Connection lhs, Connection rhs)
+            public static bool operator!=(Connection lhs, Connection rhs)
             {
                 return lhs.Id != rhs.Id || lhs.Version != rhs.Version || lhs.Address != rhs.Address;
             }
 
             public override bool Equals(object compare)
             {
-                return this == (Connection) compare;
+                return this == (Connection)compare;
             }
 
             public static Connection Null => new Connection() {Id = 0, Version = 0};
@@ -252,7 +253,8 @@ namespace Unity.Networking.Transport
 
             public Parameters(params INetworkParameter[] param)
             {
-                config = new NetworkConfigParameter {
+                config = new NetworkConfigParameter
+                {
                     maxConnectAttempts = NetworkParameterConstants.MaxConnectAttempts,
                     connectTimeoutMS = NetworkParameterConstants.ConnectTimeoutMS,
                     disconnectTimeoutMS = NetworkParameterConstants.DisconnectTimeoutMS
@@ -336,7 +338,7 @@ namespace Unity.Networking.Transport
             m_StringDB = new NativeArray<NetworkLogString>((int)StringType.NumStrings, Allocator.Persistent);
             if (StringValue.Length != (int)StringType.NumStrings)
                 throw new InvalidOperationException("Bad string database");
-            for (int i = 0; i < (int) StringType.NumStrings; ++i)
+            for (int i = 0; i < (int)StringType.NumStrings; ++i)
             {
                 m_StringDB[i] = new NetworkLogString(StringValue[i]);
             }
@@ -429,13 +431,13 @@ namespace Unity.Networking.Transport
             public int listening;
             public void Print(ref NetworkLogString msg)
             {
-                var str = stringDB[(int) StringType.ResetErrorCount];
+                var str = stringDB[(int)StringType.ResetErrorCount];
                 msg.Append(ref str);
                 msg.AppendInt(count);
-                str = stringDB[(int) StringType.ResetErrorConnection];
+                str = stringDB[(int)StringType.ResetErrorConnection];
                 msg.Append(ref str);
                 msg.AppendInt(connection);
-                str = stringDB[(int) StringType.ResetErrorListening];
+                str = stringDB[(int)StringType.ResetErrorListening];
                 msg.Append(ref str);
                 msg.AppendInt(listening);
             }
@@ -613,7 +615,7 @@ namespace Unity.Networking.Transport
             if (!m_FreeList.TryDequeue(out id))
             {
                 id = m_ConnectionList.Length;
-                m_ConnectionList.Add(new Connection{Id = id, Version = 1});
+                m_ConnectionList.Add(new Connection {Id = id, Version = 1});
             }
 
             int ver = m_ConnectionList[id].Version;
@@ -642,7 +644,7 @@ namespace Unity.Networking.Transport
         {
             var header = new UdpCHeader
             {
-                Type = (int) UdpCProtocol.ConnectionRequest,
+                Type = (int)UdpCProtocol.ConnectionRequest,
                 SessionToken = c.ReceiveToken,
                 Flags = m_DefaultHeaderFlags
             };
@@ -715,7 +717,7 @@ namespace Unity.Networking.Transport
         {
             unsafe
             {
-                return Send(pipe, id, (IntPtr) strm.GetUnsafeReadOnlyPtr(), strm.Length);
+                return Send(pipe, id, (IntPtr)strm.GetUnsafeReadOnlyPtr(), strm.Length);
             }
         }
 
@@ -743,8 +745,8 @@ namespace Unity.Networking.Transport
             int offset, size;
             slice = default(DataStreamReader);
             if (connectionId.m_NetworkId < 0 || connectionId.m_NetworkId >= m_ConnectionList.Length ||
-                 m_ConnectionList[connectionId.m_NetworkId].Version != connectionId.m_NetworkVersion)
-                return (int) NetworkEvent.Type.Empty;
+                m_ConnectionList[connectionId.m_NetworkId].Version != connectionId.m_NetworkVersion)
+                return (int)NetworkEvent.Type.Empty;
             var type = m_EventQueue.PopEventForConnection(connectionId.m_NetworkId, out offset, out size);
             if (size > 0)
                 slice = new DataStreamReader(m_DataStream, offset, size);
@@ -774,7 +776,7 @@ namespace Unity.Networking.Transport
         {
             for (int i = 0; i < m_ConnectionList.Length; i++)
             {
-                if (address == m_ConnectionList[i].Address && m_ConnectionList[i].ReceiveToken == sessionId )
+                if (address == m_ConnectionList[i].Address && m_ConnectionList[i].ReceiveToken == sessionId)
                     return m_ConnectionList[i];
             }
 
@@ -785,7 +787,7 @@ namespace Unity.Networking.Transport
         {
             for (int i = 0; i < m_ConnectionList.Length; i++)
             {
-                if (address == m_ConnectionList[i].Address && m_ConnectionList[i].SendToken == sessionId )
+                if (address == m_ConnectionList[i].Address && m_ConnectionList[i].SendToken == sessionId)
                     return m_ConnectionList[i];
             }
 
@@ -826,7 +828,7 @@ namespace Unity.Networking.Transport
         {
             var header = new UdpCHeader
             {
-                Type = (byte) type,
+                Type = (byte)type,
                 SessionToken = connection.SendToken,
                 Flags = m_DefaultHeaderFlags
             };
@@ -910,7 +912,7 @@ namespace Unity.Networking.Transport
             public int errorCode;
             public void Print(ref NetworkLogString msg)
             {
-                var str = stringDB[(int) StringType.ReceiveError];
+                var str = stringDB[(int)StringType.ReceiveError];
                 msg.Append(ref str);
                 msg.AppendInt(errorCode);
             }
@@ -931,7 +933,8 @@ namespace Unity.Networking.Transport
         }
 
         private NativeArray<int> m_ReceiveCount;
-        public int ReceiveCount {
+        public int ReceiveCount
+        {
             get { return m_ReceiveCount[0]; }
             set { m_ReceiveCount[0] = value; }
         }
@@ -944,13 +947,13 @@ namespace Unity.Networking.Transport
         public unsafe int AppendPacket(NetworkEndPoint address, UdpCHeader header, int dataLen)
         {
             int count = 0;
-            switch ((UdpCProtocol) header.Type)
+            switch ((UdpCProtocol)header.Type)
             {
                 case UdpCProtocol.ConnectionRequest:
                 {
                     if (!Listening)
                         return 0;
-                    if ((header.Flags&UdpCHeader.HeaderFlags.HasPipeline) != 0)
+                    if ((header.Flags & UdpCHeader.HeaderFlags.HasPipeline) != 0)
                     {
                         m_Logger.Log(NetworkLogger.LogLevel.Error, m_StringDB[(int)StringType.ConnectionRequestWithPipeline]);
                         return 0;
@@ -961,11 +964,11 @@ namespace Unity.Networking.Transport
                     {
                         int id;
                         var sessionId = m_SessionIdCounter[0];
-                        m_SessionIdCounter[0] = (ushort) (m_SessionIdCounter[0] + 1);
+                        m_SessionIdCounter[0] = (ushort)(m_SessionIdCounter[0] + 1);
                         if (!m_FreeList.TryDequeue(out id))
                         {
                             id = m_ConnectionList.Length;
-                            m_ConnectionList.Add(new Connection{Id = id, Version = 1});
+                            m_ConnectionList.Add(new Connection {Id = id, Version = 1});
                         }
 
                         int ver = m_ConnectionList[id].Version;
@@ -981,7 +984,7 @@ namespace Unity.Networking.Transport
                             LastAttempt = m_updateTime
                         };
                         SetConnection(c);
-                        m_PipelineProcessor.initializeConnection(new NetworkConnection{m_NetworkId = id, m_NetworkVersion = c.Version});
+                        m_PipelineProcessor.initializeConnection(new NetworkConnection {m_NetworkId = id, m_NetworkVersion = c.Version});
                         m_NetworkAcceptQueue.Enqueue(id);
                         count++;
                     }
@@ -993,25 +996,25 @@ namespace Unity.Networking.Transport
                     }
 
                     if (SendPacket(UdpCProtocol.ConnectionAccept,
-                            new NetworkConnection {m_NetworkId = c.Id, m_NetworkVersion = c.Version}) <= 0)
+                        new NetworkConnection {m_NetworkId = c.Id, m_NetworkVersion = c.Version}) <= 0)
                     {
                         m_Logger.Log(NetworkLogger.LogLevel.Error, m_StringDB[(int)StringType.ConnectionAcceptSendError]);
                     }
                 }
-                    break;
+                break;
                 case UdpCProtocol.ConnectionReject:
                 {
                     // m_EventQ.Enqueue(Id, (int)NetworkEvent.Connect);
                 }
-                    break;
+                break;
                 case UdpCProtocol.ConnectionAccept:
                 {
-                    if ((header.Flags&UdpCHeader.HeaderFlags.HasConnectToken) == 0)
+                    if ((header.Flags & UdpCHeader.HeaderFlags.HasConnectToken) == 0)
                     {
                         m_Logger.Log(NetworkLogger.LogLevel.Error, m_StringDB[(int)StringType.AcceptWithoutToken]);
                         return 0;
                     }
-                    if ((header.Flags&UdpCHeader.HeaderFlags.HasPipeline) != 0)
+                    if ((header.Flags & UdpCHeader.HeaderFlags.HasPipeline) != 0)
                     {
                         m_Logger.Log(NetworkLogger.LogLevel.Error, m_StringDB[(int)StringType.ConnectionAcceptWithPipeline]);
                         return 0;
@@ -1044,10 +1047,10 @@ namespace Unity.Networking.Transport
                         }
                     }
                 }
-                    break;
+                break;
                 case UdpCProtocol.Disconnect:
                 {
-                    if ((header.Flags&UdpCHeader.HeaderFlags.HasPipeline) != 0)
+                    if ((header.Flags & UdpCHeader.HeaderFlags.HasPipeline) != 0)
                     {
                         m_Logger.Log(NetworkLogger.LogLevel.Error, m_StringDB[(int)StringType.DisconnectWithPipeline]);
                         return 0;
@@ -1060,7 +1063,7 @@ namespace Unity.Networking.Transport
                         count++;
                     }
                 }
-                    break;
+                break;
                 case UdpCProtocol.Data:
                 {
                     Connection c = GetConnection(address, header.SessionToken);
@@ -1075,7 +1078,7 @@ namespace Unity.Networking.Transport
 
                     if (c.State == NetworkConnection.State.Connecting)
                     {
-                        if ((header.Flags&UdpCHeader.HeaderFlags.HasConnectToken) == 0)
+                        if ((header.Flags & UdpCHeader.HeaderFlags.HasConnectToken) == 0)
                         {
                             m_Logger.Log(NetworkLogger.LogLevel.Error, m_StringDB[(int)StringType.ImplicitAcceptWithoutToken]);
                             return 0;
@@ -1095,13 +1098,13 @@ namespace Unity.Networking.Transport
                         count++;
                     }
 
-                    if ((header.Flags&UdpCHeader.HeaderFlags.HasConnectToken) != 0)
+                    if ((header.Flags & UdpCHeader.HeaderFlags.HasConnectToken) != 0)
                         length -= 2;
 
                     var sliceOffset = m_DataStream.Length;
                     m_DataStream.WriteBytesWithUnsafePointer(length);
 
-                    if ((header.Flags&UdpCHeader.HeaderFlags.HasPipeline) != 0)
+                    if ((header.Flags & UdpCHeader.HeaderFlags.HasPipeline) != 0)
                     {
                         var netCon = new NetworkConnection {m_NetworkId = c.Id, m_NetworkVersion = c.Version};
                         m_PipelineProcessor.Receive(this, netCon, m_DataStream.GetNativeSlice(sliceOffset, length));
@@ -1168,6 +1171,7 @@ namespace Unity.Networking.Transport
             {
                 m_genericConcurrent = genericConcurrent;
             }
+
             public NetworkEvent.Type PopEventForConnection(NetworkConnection connectionId, out DataStreamReader slice)
             {
                 return m_genericConcurrent.PopEventForConnection(connectionId, out slice);
@@ -1193,6 +1197,7 @@ namespace Unity.Networking.Transport
         {
             m_genericDriver = new GenericNetworkDriver<IPv4UDPSocket, DefaultPipelineStageCollection>(param);
         }
+
         public bool IsCreated => m_genericDriver.IsCreated;
         public void Dispose()
         {
@@ -1297,6 +1302,7 @@ namespace Unity.Networking.Transport
             {
                 m_genericConcurrent = genericConcurrent;
             }
+
             public NetworkEvent.Type PopEventForConnection(NetworkConnection connectionId, out DataStreamReader slice)
             {
                 return m_genericConcurrent.PopEventForConnection(connectionId, out slice);
@@ -1322,6 +1328,7 @@ namespace Unity.Networking.Transport
         {
             m_genericDriver = new GenericNetworkDriver<IPCSocket, DefaultPipelineStageCollection>(param);
         }
+
         public bool IsCreated => m_genericDriver.IsCreated;
         public void Dispose()
         {
@@ -1415,5 +1422,4 @@ namespace Unity.Networking.Transport
             return m_genericDriver.PopEventForConnection(con, out bs);
         }
     }
-
 }

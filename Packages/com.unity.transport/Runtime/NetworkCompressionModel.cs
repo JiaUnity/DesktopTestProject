@@ -15,8 +15,8 @@ namespace Unity.Networking.Transport
             0, 1, 2, 4, 8, 16, 32, 96, 352, 1376, 5472, 38240, 300384, 2397536, 19174752, 153392480
         };
         internal static readonly byte[] k_DefaultModelData = { 16, // 16 symbols
-            2, 3, 3, 3,   4, 4, 4, 5,     5, 5, 6, 6,     6, 6, 6, 6,
-            0, 0 };  // no contexts
+                                                               2, 3, 3, 3,   4, 4, 4, 5,     5, 5, 6, 6,     6, 6, 6, 6,
+                                                               0, 0 }; // no contexts
         internal const int k_AlphabetSize = 16;
         internal const int k_MaxHuffmanSymbolLength = 6;
 
@@ -27,6 +27,7 @@ namespace Unity.Networking.Transport
             bucketSizes.Dispose();
             bucketOffsets.Dispose();
         }
+
         public NetworkCompressionModel(Allocator allocator)
         {
             bucketSizes = new NativeArray<byte>(k_BucketSizes, allocator);
@@ -101,6 +102,7 @@ namespace Unity.Networking.Transport
                 }
             }
         }
+
         private static void GenerateHuffmanCodes(byte[] symboLCodes, int symbolCodesOffset, byte[] symbolLengths, int symbolLengthsOffset, int alphabetSize, int maxCodeLength)
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
@@ -138,6 +140,7 @@ namespace Unity.Networking.Transport
                 nextCodeWord <<= 1;
             }
         }
+
         private static uint ReverseBits(uint value, int num_bits)
         {
             value = ((value & 0x55555555u) << 1) | ((value & 0xAAAAAAAAu) >> 1);
@@ -172,10 +175,12 @@ namespace Unity.Networking.Transport
                     {
                         decodeTable[decodeTableOffset + code] = (ushort)(symbol << 8 | length);
                         code += step;
-                    } while (code < maxCode);
+                    }
+                    while (code < maxCode);
                 }
             }
         }
+
         [ReadOnly] public NativeArray<ushort> encodeTable;
         [ReadOnly] public NativeArray<ushort> decodeTable;
         [ReadOnly] public NativeArray<byte> bucketSizes;

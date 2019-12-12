@@ -21,7 +21,7 @@ public class PresetTwo : MonoBehaviour
         text.text += "4. The music <color=brown>keeps playing</color> after Player window loses focus.\n";
 
 #if UNITY_STANDALONE_OSX
-        
+
         text.text += "5. Player window <color=brown>can</color> swtich to fullscreen (Command + F, Green Dot, etc.)\n";
         text.text += "6. The menu item:<color=brown> Window -> Fullscreen</color> is greyed out.\n";
         text.text += "10. The <color=brown>highest resolution</color> choice in the Dialog is 1920 x 1200.\n";

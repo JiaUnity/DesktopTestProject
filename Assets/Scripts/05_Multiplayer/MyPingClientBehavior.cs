@@ -1,4 +1,4 @@
-﻿using Unity.Burst;
+using Unity.Burst;
 using UnityEngine;
 using Unity.Networking.Transport;
 using Unity.Collections;
@@ -29,7 +29,7 @@ public class MyPingClientBehavior : MonoBehaviour
 
     public InputField m_clientOutput;
     public Button m_pingButton;
-    
+
 
     // Start is called before the first frame update
     void Start()
@@ -82,7 +82,7 @@ public class MyPingClientBehavior : MonoBehaviour
             // Process all events on the connection. If the connection is invalid it will return Empty immediately
             while ((cmd = connection[0].PopEvent(driver, out strm)) != NetworkEvent.Type.Empty)
             {
-                // Once connected, start sending data to the server               
+                // Once connected, start sending data to the server
                 if (cmd == NetworkEvent.Type.Connect)
                 {
                     // Update the number of sent pings
@@ -96,14 +96,14 @@ public class MyPingClientBehavior : MonoBehaviour
                     // Create a 4 byte data stream to store the ping sequence number in
                     var pingData = new DataStreamWriter(4, Allocator.Temp);
                     pingData.Write(pingStats[0]);
-                    connection[0].Send(driver, pingData);                    
+                    connection[0].Send(driver, pingData);
                 }
                 // Once the message is received, calculate the ping time and disconnect from the server
                 else if (cmd == NetworkEvent.Type.Data)
                 {
                     pingStats[1] = (int)((fixedTime - pendingPings[0].time) * 1000);
                     connection[0].Disconnect(driver);
-                    connection[0] = default;                    
+                    connection[0] = default;
                 }
                 // Clear out connection if the server is disconnected
                 else if (cmd == NetworkEvent.Type.Disconnect)
@@ -130,7 +130,8 @@ public class MyPingClientBehavior : MonoBehaviour
         }
 
         // Update the ping statistics computed by the job scheduled previous frame since that is now guaranteed to have completed
-        var pingJob = new PingJob {
+        var pingJob = new PingJob
+        {
             driver = m_driver,
             connection = m_connection,
             pendingPings = m_pendingPings,
@@ -154,7 +155,7 @@ public class MyPingClientBehavior : MonoBehaviour
         {
             m_serverEndPoint = default;
             ShowMessage("Stop Ping.");
-        }            
+        }
         else
         {
             var endpoint = NetworkEndPoint.LoopbackIpv4;

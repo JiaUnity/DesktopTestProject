@@ -18,7 +18,7 @@ public class PresetThree : MonoBehaviour
         text.text += "1. Player window launches in <color=brown>fullscreen</color>.\n";
 
 #if UNITY_STANDALONE_OSX
-        text.text += "5. Player window <color=brown>can</color> swtich between fullscreen and windowed mode (Command + F, Green Dot, etc.)\n"; 
+        text.text += "5. Player window <color=brown>can</color> swtich between fullscreen and windowed mode (Command + F, Green Dot, etc.)\n";
         text.text += "6. In fullscreen mode, Dock and Menu Bar <color=brown>appear</color> when cursor is at the edge.\n";
 #else
         text.text += "2. In fullscreen mode, when Player loses focus, the music <color=brown>stops playing</color>, but the Player window remains in place.\n";

@@ -54,7 +54,7 @@ namespace Unity.Networking.Transport
         {
             return driver.Send(NetworkPipeline.Null, this, bs);
         }
-        
+
         public int Send<T>(T driver, NetworkPipeline pipeline, DataStreamWriter bs) where T : struct, INetworkDriver
         {
             return driver.Send(pipeline, this, bs);
@@ -86,12 +86,12 @@ namespace Unity.Networking.Transport
             return driver.GetConnectionState(this);
         }
 
-        public static bool operator ==(NetworkConnection lhs, NetworkConnection rhs)
+        public static bool operator==(NetworkConnection lhs, NetworkConnection rhs)
         {
             return lhs.m_NetworkId == rhs.m_NetworkId && lhs.m_NetworkVersion == rhs.m_NetworkVersion;
         }
 
-        public static bool operator !=(NetworkConnection lhs, NetworkConnection rhs)
+        public static bool operator!=(NetworkConnection lhs, NetworkConnection rhs)
         {
             return lhs.m_NetworkId != rhs.m_NetworkId || lhs.m_NetworkVersion != rhs.m_NetworkVersion;
         }
@@ -100,6 +100,7 @@ namespace Unity.Networking.Transport
         {
             return this == (NetworkConnection)o;
         }
+
         public bool Equals(NetworkConnection o)
         {
             return this == o;

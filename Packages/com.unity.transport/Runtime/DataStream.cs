@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using System;
@@ -270,7 +270,7 @@ namespace Unity.Networking.Transport
             m_Data = (StreamData*)UnsafeUtility.Malloc(UnsafeUtility.SizeOf<StreamData>(), UnsafeUtility.AlignOf<StreamData>(), m_Allocator);
             m_Data->capacity = capacity;
             m_Data->length = 0;
-            m_Data->buffer = (byte*) UnsafeUtility.Malloc(capacity, UnsafeUtility.AlignOf<byte>(), m_Allocator);
+            m_Data->buffer = (byte*)UnsafeUtility.Malloc(capacity, UnsafeUtility.AlignOf<byte>(), m_Allocator);
             m_Data->bitBuffer = 0;
             m_Data->bitIndex = 0;
 
@@ -280,7 +280,7 @@ namespace Unity.Networking.Transport
             uint test = 1;
             unsafe
             {
-                byte* test_b = (byte*) &test;
+                byte* test_b = (byte*)&test;
                 IsLittleEndian = test_b[0] == 1;
             }
         }
@@ -289,11 +289,12 @@ namespace Unity.Networking.Transport
 
         private static short ByteSwap(short val)
         {
-            return (short)(((val & 0xff) << 8) | ((val >> 8)&0xff));
+            return (short)(((val & 0xff) << 8) | ((val >> 8) & 0xff));
         }
+
         private static int ByteSwap(int val)
         {
-            return (int)(((val & 0xff) << 24) |((val&0xff00)<<8) | ((val>>8)&0xff00) | ((val >> 24)&0xff));
+            return (int)(((val & 0xff) << 24) | ((val & 0xff00) << 8) | ((val >> 8) & 0xff00) | ((val >> 24) & 0xff));
         }
 
         /// <summary>
@@ -330,7 +331,7 @@ namespace Unity.Networking.Transport
                 if (m_Data->length + ((m_Data->bitIndex + 7) >> 3) > value)
                     throw new InvalidOperationException("Cannot shrink a data stream to be shorter than the current data in it");
 #endif
-                byte* newbuf = (byte*) UnsafeUtility.Malloc(value, UnsafeUtility.AlignOf<byte>(), m_Allocator);
+                byte* newbuf = (byte*)UnsafeUtility.Malloc(value, UnsafeUtility.AlignOf<byte>(), m_Allocator);
                 UnsafeUtility.MemCpy(newbuf, m_Data->buffer, m_Data->length);
                 UnsafeUtility.Free(m_Data->buffer, m_Allocator);
                 m_Data->buffer = newbuf;
@@ -363,7 +364,7 @@ namespace Unity.Networking.Transport
 #endif
             UnsafeUtility.Free(m_Data->buffer, m_Allocator);
             UnsafeUtility.Free(m_Data, m_Allocator);
-            m_Data = (StreamData*) 0;
+            m_Data = (StreamData*)0;
         }
 
         public void Flush()
@@ -431,7 +432,7 @@ namespace Unity.Networking.Transport
             ValidateSizeParameters(start, length, dest.Length);
 #endif
 
-            fixed (byte* ptr = dest)
+            fixed(byte* ptr = dest)
             {
                 UnsafeUtility.MemCpy(ptr, m_Data->buffer + start, length);
             }
@@ -452,6 +453,7 @@ namespace Unity.Networking.Transport
 
             AtomicSafetyHandle.CheckReadAndThrow(m_Safety);
         }
+
 #endif
 
         public void WriteBytes(byte* data, int bytes)
@@ -469,7 +471,7 @@ namespace Unity.Networking.Transport
         public DeferredByte Write(byte value)
         {
             var ret = new DeferredByte {m_writer = this, m_offset = m_Data->length + ((m_Data->bitIndex + 7) >> 3)};
-            WriteBytes((byte*) &value, sizeof(byte));
+            WriteBytes((byte*)&value, sizeof(byte));
             return ret;
         }
 
@@ -484,7 +486,7 @@ namespace Unity.Networking.Transport
             if (length < 0)
                 length = value.Length;
 
-            fixed (byte* p = value)
+            fixed(byte* p = value)
             {
                 WriteBytes(p, length);
             }
@@ -493,28 +495,28 @@ namespace Unity.Networking.Transport
         public DeferredShort Write(short value)
         {
             var ret = new DeferredShort {m_writer = this, m_offset = m_Data->length + ((m_Data->bitIndex + 7) >> 3)};
-            WriteBytes((byte*) &value, sizeof(short));
+            WriteBytes((byte*)&value, sizeof(short));
             return ret;
         }
 
         public DeferredUShort Write(ushort value)
         {
             var ret = new DeferredUShort {m_writer = this, m_offset = m_Data->length + ((m_Data->bitIndex + 7) >> 3)};
-            WriteBytes((byte*) &value, sizeof(ushort));
+            WriteBytes((byte*)&value, sizeof(ushort));
             return ret;
         }
 
         public DeferredInt Write(int value)
         {
             var ret = new DeferredInt {m_writer = this, m_offset = m_Data->length + ((m_Data->bitIndex + 7) >> 3)};
-            WriteBytes((byte*) &value, sizeof(int));
+            WriteBytes((byte*)&value, sizeof(int));
             return ret;
         }
 
         public DeferredUInt Write(uint value)
         {
             var ret = new DeferredUInt {m_writer = this, m_offset = m_Data->length + ((m_Data->bitIndex + 7) >> 3)};
-            WriteBytes((byte*) &value, sizeof(uint));
+            WriteBytes((byte*)&value, sizeof(uint));
             return ret;
         }
 
@@ -522,14 +524,14 @@ namespace Unity.Networking.Transport
         {
             var ret = new DeferredShortNetworkByteOrder {m_writer = this, m_offset = m_Data->length + ((m_Data->bitIndex + 7) >> 3)};
             short netValue = IsLittleEndian ? ByteSwap(value) : value;
-            WriteBytes((byte*) &netValue, sizeof(short));
+            WriteBytes((byte*)&netValue, sizeof(short));
             return ret;
         }
 
         public DeferredUShortNetworkByteOrder WriteNetworkByteOrder(ushort value)
         {
             var ret = new DeferredUShortNetworkByteOrder {m_writer = this, m_offset = m_Data->length + ((m_Data->bitIndex + 7) >> 3)};
-            WriteNetworkByteOrder((short) value);
+            WriteNetworkByteOrder((short)value);
             return ret;
         }
 
@@ -537,7 +539,7 @@ namespace Unity.Networking.Transport
         {
             var ret = new DeferredIntNetworkByteOrder {m_writer = this, m_offset = m_Data->length + ((m_Data->bitIndex + 7) >> 3)};
             int netValue = IsLittleEndian ? ByteSwap(value) : value;
-            WriteBytes((byte*) &netValue, sizeof(int));
+            WriteBytes((byte*)&netValue, sizeof(int));
             return ret;
         }
 
@@ -553,7 +555,7 @@ namespace Unity.Networking.Transport
             var ret = new DeferredFloat {m_writer = this, m_offset = m_Data->length + ((m_Data->bitIndex + 7) >> 3)};
             UIntFloat uf = new UIntFloat();
             uf.floatValue = value;
-            Write((int) uf.intValue);
+            Write((int)uf.intValue);
             return ret;
         }
 
@@ -566,6 +568,7 @@ namespace Unity.Networking.Transport
                 m_Data->bitBuffer >>= 8;
             }
         }
+
         void WriteRawBitsInternal(uint value, int numbits)
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
@@ -587,28 +590,32 @@ namespace Unity.Networking.Transport
             ushort encodeEntry = model.encodeTable[bucket];
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
-            if (m_Data->length + ((m_Data->bitIndex + encodeEntry&0xff + bits + 7) >> 3) > m_Data->capacity)
+            if (m_Data->length + ((m_Data->bitIndex + encodeEntry & 0xff + bits + 7) >> 3) > m_Data->capacity)
                 throw new System.ArgumentOutOfRangeException();
 #endif
             WriteRawBitsInternal((uint)(encodeEntry >> 8), encodeEntry & 0xFF);
             WriteRawBitsInternal(value - offset, bits);
             FlushBits();
         }
+
         public void WritePackedInt(int value, NetworkCompressionModel model)
         {
             uint interleaved = (uint)((value >> 31) ^ (value << 1));      // interleave negative values between positive values: 0, -1, 1, -2, 2
             WritePackedUInt(interleaved, model);
         }
+
         public void WritePackedUIntDelta(uint value, uint baseline, NetworkCompressionModel model)
         {
             int diff = (int)(baseline - value);
             WritePackedInt(diff, model);
         }
+
         public void WritePackedIntDelta(int value, int baseline, NetworkCompressionModel model)
         {
             int diff = (int)(baseline - value);
             WritePackedInt(diff, model);
         }
+
         /// <summary>
         /// Moves the write position to the start of the data buffer used.
         /// </summary>
@@ -690,7 +697,7 @@ namespace Unity.Networking.Transport
             uint test = 1;
             unsafe
             {
-                byte* test_b = (byte*) &test;
+                byte* test_b = (byte*)&test;
                 IsLittleEndian = test_b[0] == 1;
             }
         }
@@ -710,7 +717,7 @@ namespace Unity.Networking.Transport
             uint test = 1;
             unsafe
             {
-                byte* test_b = (byte*) &test;
+                byte* test_b = (byte*)&test;
                 IsLittleEndian = test_b[0] == 1;
             }
         }
@@ -719,11 +726,12 @@ namespace Unity.Networking.Transport
 
         private static short ByteSwap(short val)
         {
-            return (short)(((val & 0xff) << 8) | ((val >> 8)&0xff));
+            return (short)(((val & 0xff) << 8) | ((val >> 8) & 0xff));
         }
+
         private static int ByteSwap(int val)
         {
-            return (int)(((val & 0xff) << 24) |((val&0xff00)<<8) | ((val>>8)&0xff00) | ((val >> 24)&0xff));
+            return (int)(((val & 0xff) << 24) | ((val & 0xff00) << 8) | ((val >> 8) & 0xff00) | ((val >> 24) & 0xff));
         }
 
         /// <summary>
@@ -807,76 +815,78 @@ namespace Unity.Networking.Transport
         {
             return ctx.m_ReadByteIndex - (ctx.m_BitIndex >> 3);
         }
+
         public int GetBitsRead(ref Context ctx)
         {
-            return (ctx.m_ReadByteIndex<<3) - ctx.m_BitIndex;
+            return (ctx.m_ReadByteIndex << 3) - ctx.m_BitIndex;
         }
 
         public byte ReadByte(ref Context ctx)
         {
             byte data;
-            ReadBytes(ref ctx, (byte*) &data, sizeof(byte));
+            ReadBytes(ref ctx, (byte*)&data, sizeof(byte));
             return data;
         }
 
         public short ReadShort(ref Context ctx)
         {
             short data;
-            ReadBytes(ref ctx, (byte*) &data, sizeof(short));
+            ReadBytes(ref ctx, (byte*)&data, sizeof(short));
             return data;
         }
 
         public ushort ReadUShort(ref Context ctx)
         {
             ushort data;
-            ReadBytes(ref ctx, (byte*) &data, sizeof(ushort));
+            ReadBytes(ref ctx, (byte*)&data, sizeof(ushort));
             return data;
         }
 
         public int ReadInt(ref Context ctx)
         {
             int data;
-            ReadBytes(ref ctx, (byte*) &data, sizeof(int));
+            ReadBytes(ref ctx, (byte*)&data, sizeof(int));
             return data;
         }
 
         public uint ReadUInt(ref Context ctx)
         {
             uint data;
-            ReadBytes(ref ctx, (byte*) &data, sizeof(uint));
+            ReadBytes(ref ctx, (byte*)&data, sizeof(uint));
             return data;
         }
 
         public short ReadShortNetworkByteOrder(ref Context ctx)
         {
             short data;
-            ReadBytes(ref ctx, (byte*) &data, sizeof(short));
+            ReadBytes(ref ctx, (byte*)&data, sizeof(short));
             return IsLittleEndian ? ByteSwap(data) : data;
         }
 
         public ushort ReadUShortNetworkByteOrder(ref Context ctx)
         {
-            return (ushort) ReadShortNetworkByteOrder(ref ctx);
+            return (ushort)ReadShortNetworkByteOrder(ref ctx);
         }
 
         public int ReadIntNetworkByteOrder(ref Context ctx)
         {
             int data;
-            ReadBytes(ref ctx, (byte*) &data, sizeof(int));
+            ReadBytes(ref ctx, (byte*)&data, sizeof(int));
             return IsLittleEndian ? ByteSwap(data) : data;
         }
 
         public uint ReadUIntNetworkByteOrder(ref Context ctx)
         {
-            return (uint) ReadIntNetworkByteOrder(ref ctx);
+            return (uint)ReadIntNetworkByteOrder(ref ctx);
         }
 
         public float ReadFloat(ref Context ctx)
         {
             UIntFloat uf = new UIntFloat();
-            uf.intValue = (uint) ReadInt(ref ctx);
+            uf.intValue = (uint)ReadInt(ref ctx);
             return uf.floatValue;
         }
+
         public uint ReadPackedUInt(ref Context ctx, NetworkCompressionModel model)
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
@@ -904,6 +914,7 @@ namespace Unity.Networking.Transport
             int bits = model.bucketSizes[symbol];
             return ReadRawBitsInternal(ref ctx, bits) + offset;
         }
+
         void FillBitBuffer(ref Context ctx)
         {
             while (ctx.m_BitIndex <= 56 && ctx.m_ReadByteIndex < m_Length)
@@ -912,6 +923,7 @@ namespace Unity.Networking.Transport
                 ctx.m_BitIndex += 8;
             }
         }
+
         uint ReadRawBitsInternal(ref Context ctx, int numbits)
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
@@ -933,6 +945,7 @@ namespace Unity.Networking.Transport
             uint folded = ReadPackedUInt(ref ctx, model);
             return (int)(folded >> 1) ^ -(int)(folded & 1);    // Deinterleave values from [0, -1, 1, -2, 2...] to [..., -2, -1, -0, 1, 2, ...]
         }
+
         public int ReadPackedIntDelta(ref Context ctx, int baseline, NetworkCompressionModel model)
         {
             int delta = ReadPackedInt(ref ctx, model);

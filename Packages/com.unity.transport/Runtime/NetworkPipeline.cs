@@ -72,19 +72,19 @@ namespace Unity.Networking.Transport
         internal int Id;
         public static NetworkPipeline Null => default(NetworkPipeline);
 
-        public static bool operator ==(NetworkPipeline lhs, NetworkPipeline rhs)
+        public static bool operator==(NetworkPipeline lhs, NetworkPipeline rhs)
         {
             return lhs.Id == rhs.Id;
         }
 
-        public static bool operator !=(NetworkPipeline lhs, NetworkPipeline rhs)
+        public static bool operator!=(NetworkPipeline lhs, NetworkPipeline rhs)
         {
             return lhs.Id != rhs.Id;
         }
 
         public override bool Equals(object compare)
         {
-            return this == (NetworkPipeline) compare;
+            return this == (NetworkPipeline)compare;
         }
 
         public override int GetHashCode()
@@ -103,7 +103,7 @@ namespace Unity.Networking.Transport
         public int initialCapacity;
     }
 
-    internal struct NetworkPipelineProcessor<TNetworkPipelineStageCollection> : IDisposable where TNetworkPipelineStageCollection: struct, INetworkPipelineStageCollection
+    internal struct NetworkPipelineProcessor<TNetworkPipelineStageCollection> : IDisposable where TNetworkPipelineStageCollection : struct, INetworkPipelineStageCollection
     {
         public Concurrent ToConcurrent()
         {
@@ -120,6 +120,7 @@ namespace Unity.Networking.Transport
             };
             return concurrent;
         }
+
         public struct Concurrent
         {
             // FIXME: read-only?
@@ -135,14 +136,14 @@ namespace Unity.Networking.Transport
 
             public unsafe int Send<T>(T driver, NetworkPipeline pipeline, NetworkConnection connection, NativeSlice<byte> payloadData) where T : struct, INetworkPipelineSender
             {
-                var p = m_Pipelines[pipeline.Id-1];
+                var p = m_Pipelines[pipeline.Id - 1];
 
                 var connectionId = connection.m_NetworkId;
                 int startStage = 0;
 
                 // TODO: not really read-only, just hacking the safety system
                 NativeArray<byte> tmpBuffer = sendBuffer;
-                int* sendBufferLock = (int*) tmpBuffer.GetUnsafeReadOnlyPtr();
+                int* sendBufferLock = (int*)tmpBuffer.GetUnsafeReadOnlyPtr();
                 sendBufferLock += connectionId * sizePerConnection[SendSizeOffset] / 4;
 
                 while (Interlocked.CompareExchange(ref *sendBufferLock, 1, 0) != 0)
@@ -167,7 +168,7 @@ namespace Unity.Networking.Transport
             {
                 NetworkPipelineContext ctx = default(NetworkPipelineContext);
                 ctx.timestamp = m_timestamp[0];
-                var p = m_Pipelines[pipeline.Id-1];
+                var p = m_Pipelines[pipeline.Id - 1];
                 var connectionId = connection.m_NetworkId;
 
                 var resumeQ = new NativeList<int>(16, Allocator.Temp);
@@ -214,7 +215,6 @@ namespace Unity.Networking.Transport
                                     inboundBuffer.buffer2 = inboundBuffer.buffer1;
                                 inboundBuffer.buffer1 = prevHeader.GetNativeSlice(0, prevHeader.Length);
                             }
-
                         }
                         else
                         {
@@ -282,7 +282,7 @@ namespace Unity.Networking.Transport
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 var handle = AtomicSafetyHandle.Create();
 #endif
-                var ptr = (void*)((byte*) array.GetUnsafeReadOnlyPtr() + offset);
+                var ptr = (void*)((byte*)array.GetUnsafeReadOnlyPtr() + offset);
                 var buffer =
                     NativeArrayUnsafeUtility.ConvertExistingDataToNativeArray<byte>(ptr, length, Allocator.None);
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
@@ -392,7 +392,7 @@ namespace Unity.Networking.Transport
                 m_SendBuffer.ResizeUninitialized(requiredSendSize);
             if (m_SharedBuffer.Length < requiredSharedSize)
                 m_SharedBuffer.ResizeUninitialized(requiredSharedSize);
-            
+
             UnsafeUtility.MemClear((byte*)m_ReceiveBuffer.GetUnsafePtr() + con.m_NetworkId * sizePerConnection[RecveiveSizeOffset], sizePerConnection[RecveiveSizeOffset]);
             UnsafeUtility.MemClear((byte*)m_SendBuffer.GetUnsafePtr() + con.m_NetworkId * sizePerConnection[SendSizeOffset], sizePerConnection[SendSizeOffset]);
             UnsafeUtility.MemClear((byte*)m_SharedBuffer.GetUnsafePtr() + con.m_NetworkId * sizePerConnection[SharedSizeOffset], sizePerConnection[SharedSizeOffset]);
@@ -413,12 +413,12 @@ namespace Unity.Networking.Transport
                 int sharedBufferOffset = pipeline.sharedBufferOffset + sizePerConnection[SharedSizeOffset] * connectionId;
 
                 for (int stage = pipeline.FirstStageIndex;
-                    stage < pipeline.FirstStageIndex + pipeline.NumStages;
-                    stage++)
+                     stage < pipeline.FirstStageIndex + pipeline.NumStages;
+                     stage++)
                 {
                     var sendProcessBuffer =
                         new NativeSlice<byte>(m_SendBuffer, sendBufferOffset, m_StageCollection.GetSendCapacity(m_StageList[stage]));
-                    var recvProcessBuffer = 
+                    var recvProcessBuffer =
                         new NativeSlice<byte>(m_ReceiveBuffer, recvBufferOffset, m_StageCollection.GetReceiveCapacity(m_StageList[stage]));
                     var sharedProcessBuffer =
                         new NativeSlice<byte>(m_SharedBuffer, sharedBufferOffset, m_StageCollection.GetSharedStateCapacity(m_StageList[stage]));
@@ -489,22 +489,22 @@ namespace Unity.Networking.Transport
             {
                 var pipelineImpl = m_Pipelines[pipelineId];
                 for (stageIndexInList = pipelineImpl.FirstStageIndex;
-                    stageIndexInList < pipelineImpl.FirstStageIndex + pipelineImpl.NumStages;
-                    stageIndexInList++)
+                     stageIndexInList < pipelineImpl.FirstStageIndex + pipelineImpl.NumStages;
+                     stageIndexInList++)
                 {
                     if (m_StageList[stageIndexInList] == stageId)
                         break;
                 }
             }
 
-            GetPipelineBuffers(new NetworkPipeline{Id = pipelineId}, stageId, connection, ref readProcessingBuffer, ref writeProcessingBuffer, ref sharedBuffer);
+            GetPipelineBuffers(new NetworkPipeline {Id = pipelineId}, stageId, connection, ref readProcessingBuffer, ref writeProcessingBuffer, ref sharedBuffer);
         }
 
         public void GetPipelineBuffers(NetworkPipeline pipelineId, int stageId, NetworkConnection connection,
             ref NativeSlice<byte> readProcessingBuffer, ref NativeSlice<byte> writeProcessingBuffer,
             ref NativeSlice<byte> sharedBuffer)
         {
-            var pipeline = m_Pipelines[pipelineId.Id-1];
+            var pipeline = m_Pipelines[pipelineId.Id - 1];
 
             int recvBufferOffset = pipeline.receiveBufferOffset + sizePerConnection[RecveiveSizeOffset] * connection.InternalId;
             int sendBufferOffset = pipeline.sendBufferOffset + sizePerConnection[SendSizeOffset] * connection.InternalId;
@@ -513,8 +513,8 @@ namespace Unity.Networking.Transport
             int stageIndexInList;
             bool stageNotFound = true;
             for (stageIndexInList = pipeline.FirstStageIndex;
-                stageIndexInList < pipeline.FirstStageIndex + pipeline.NumStages;
-                stageIndexInList++)
+                 stageIndexInList < pipeline.FirstStageIndex + pipeline.NumStages;
+                 stageIndexInList++)
             {
                 if (m_StageList[stageIndexInList] == stageId)
                 {
@@ -529,13 +529,13 @@ namespace Unity.Networking.Transport
             if (stageNotFound)
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 throw new InvalidOperationException("Could not find stage ID " + stageId +
-                                " make sure the type for this stage ID is added when the pipeline is created.");
+                " make sure the type for this stage ID is added when the pipeline is created.");
 #else
                 return;
 #endif
 
             writeProcessingBuffer =
-                    new NativeSlice<byte>(m_SendBuffer, sendBufferOffset, m_StageCollection.GetSendCapacity(m_StageList[stageIndexInList]));
+                new NativeSlice<byte>(m_SendBuffer, sendBufferOffset, m_StageCollection.GetSendCapacity(m_StageList[stageIndexInList]));
             readProcessingBuffer =
                 new NativeSlice<byte>(m_ReceiveBuffer, recvBufferOffset, m_StageCollection.GetReceiveCapacity(m_StageList[stageIndexInList]));
             sharedBuffer =
@@ -582,7 +582,7 @@ namespace Unity.Networking.Transport
         private static void AddSendUpdate(NetworkConnection connection, int stageId, NetworkPipeline pipelineId, NativeList<UpdatePipeline> currentUpdates)
         {
             var newUpdate = new UpdatePipeline
-                {connection = connection, stage = stageId, pipeline = pipelineId};
+            {connection = connection, stage = stageId, pipeline = pipelineId};
             bool uniqueItem = true;
             for (int j = 0; j < currentUpdates.Length; ++j)
             {
@@ -595,7 +595,7 @@ namespace Unity.Networking.Transport
                 currentUpdates.Add(newUpdate);
         }
 
-        public void UpdateReceive<T>(T driver, out int updateCount) where T: struct, INetworkPipelineReceiver
+        public void UpdateReceive<T>(T driver, out int updateCount) where T : struct, INetworkPipelineReceiver
         {
             updateCount = m_ReceiveStageNeedsUpdate.Length;
             NativeArray<UpdatePipeline> receiveUpdates = new NativeArray<UpdatePipeline>(updateCount, Allocator.Temp);
@@ -613,18 +613,18 @@ namespace Unity.Networking.Transport
             }
         }
 
-        public void Receive<T>(T driver, NetworkConnection connection, NativeSlice<byte> buffer) where T: struct, INetworkPipelineReceiver
+        public void Receive<T>(T driver, NetworkConnection connection, NativeSlice<byte> buffer) where T : struct, INetworkPipelineReceiver
         {
             byte pipelineId = buffer[0];
-            var p = m_Pipelines[pipelineId-1];
+            var p = m_Pipelines[pipelineId - 1];
             int startStage = p.NumStages - 1;
 
-            ProcessReceiveStagesFrom(driver, startStage, new NetworkPipeline{Id = pipelineId}, connection, new NativeSlice<byte>(buffer, 1, buffer.Length -1));
+            ProcessReceiveStagesFrom(driver, startStage, new NetworkPipeline {Id = pipelineId}, connection, new NativeSlice<byte>(buffer, 1, buffer.Length - 1));
         }
 
-        private void ProcessReceiveStagesFrom<T>(T driver, int startStage, NetworkPipeline pipeline, NetworkConnection connection, NativeSlice<byte> buffer) where T: struct, INetworkPipelineReceiver
+        private void ProcessReceiveStagesFrom<T>(T driver, int startStage, NetworkPipeline pipeline, NetworkConnection connection, NativeSlice<byte> buffer) where T : struct, INetworkPipelineReceiver
         {
-            var p = m_Pipelines[pipeline.Id-1];
+            var p = m_Pipelines[pipeline.Id - 1];
             var connectionId = connection.m_NetworkId;
             var resumeQ = new NativeList<int>(16, Allocator.Temp);
             int resumeQStart = 0;
@@ -645,8 +645,8 @@ namespace Unity.Networking.Transport
                 // Adjust offset accounting for stages in front of the starting stage, since we're parsing the stages in reverse order
                 for (int st = 0; st < startStage; ++st)
                 {
-                    internalBufferOffset += m_StageCollection.GetReceiveCapacity(m_StageList[p.FirstStageIndex+st]);
-                    internalSharedBufferOffset += m_StageCollection.GetSharedStateCapacity(m_StageList[p.FirstStageIndex+st]);
+                    internalBufferOffset += m_StageCollection.GetReceiveCapacity(m_StageList[p.FirstStageIndex + st]);
+                    internalSharedBufferOffset += m_StageCollection.GetSharedStateCapacity(m_StageList[p.FirstStageIndex + st]);
                 }
 
                 for (int i = startStage; i >= 0; --i)
@@ -655,7 +655,7 @@ namespace Unity.Networking.Transport
                     if (needsUpdate)
                     {
                         var newUpdate = new UpdatePipeline
-                            {connection = connection, stage = i, pipeline = pipeline};
+                        {connection = connection, stage = i, pipeline = pipeline};
                         bool uniqueItem = true;
                         for (int j = 0; j < m_ReceiveStageNeedsUpdate.Length; ++j)
                         {
@@ -702,12 +702,12 @@ namespace Unity.Networking.Transport
         private void ProcessReceiveStage(int stage, NetworkPipeline pipeline, int internalBufferOffset, int internalSharedBufferOffset, ref NetworkPipelineContext ctx, ref NativeSlice<byte> inboundBuffer, ref NativeList<int> resumeQ, ref bool needsUpdate, ref bool needsSendUpdate)
         {
             bool needsResume = false;
-            var p = m_Pipelines[pipeline.Id-1];
+            var p = m_Pipelines[pipeline.Id - 1];
 
             ctx.internalProcessBuffer =
-                new NativeSlice<byte>(m_ReceiveBuffer, internalBufferOffset, m_StageCollection.GetReceiveCapacity(m_StageList[p.FirstStageIndex+stage]));
+                new NativeSlice<byte>(m_ReceiveBuffer, internalBufferOffset, m_StageCollection.GetReceiveCapacity(m_StageList[p.FirstStageIndex + stage]));
             ctx.internalSharedProcessBuffer =
-                new NativeSlice<byte>(m_SharedBuffer, internalSharedBufferOffset, m_StageCollection.GetSharedStateCapacity(m_StageList[p.FirstStageIndex+stage]));
+                new NativeSlice<byte>(m_SharedBuffer, internalSharedBufferOffset, m_StageCollection.GetSharedStateCapacity(m_StageList[p.FirstStageIndex + stage]));
             var stageId = m_StageList[p.FirstStageIndex + stage];
             inboundBuffer = m_StageCollection.InvokeReceive(stageId, ctx, inboundBuffer, ref needsResume, ref needsUpdate, ref needsSendUpdate);
 

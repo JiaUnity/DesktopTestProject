@@ -34,7 +34,7 @@ native_get_last_error()
 #endif
 }
 
-EXPORT_API int32_t 
+EXPORT_API int32_t
 network_initialize()
 {
     int retval = 0;
@@ -173,8 +173,8 @@ network_sendmsg(int64_t socket_handle, network_iov_t *iov, int32_t iov_len, netw
 
     uint32_t bytes_send;
     ret = WSASendTo(socket_handle, iv, iov_len,
-                        &bytes_send, 0, (SOCKADDR *)address,
-                        (int)address->length, NULL, NULL);
+        &bytes_send, 0, (SOCKADDR *)address,
+        (int)address->length, NULL, NULL);
     if (ret != SOCKET_ERROR)
         ret = bytes_send;
 #else
@@ -215,8 +215,8 @@ network_recvmsg(int64_t socket_handle, network_iov_t *iov, int32_t iov_len, netw
     uint32_t flags = 0;
     uint32_t bytes_received = 0;
     ret = WSARecvFrom(socket_handle, iv, iov_len,
-                          &bytes_received, &flags, (SOCKADDR *)remote,
-                          (int*)&remote->length, NULL, NULL);
+        &bytes_received, &flags, (SOCKADDR *)remote,
+        (int*)&remote->length, NULL, NULL);
     if (ret != SOCKET_ERROR)
         ret = bytes_received;
 #else

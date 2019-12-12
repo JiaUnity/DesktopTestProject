@@ -1,4 +1,4 @@
-﻿```c#
+```c#
 using System.Net;
 using UnityEngine;
 
@@ -12,9 +12,9 @@ public class ServerBehaviour : MonoBehaviour
 {
     public UdpCNetworkDriver m_Driver;
     private NativeList<NetworkConnection> m_Connections;
-    
+
     void Start ()
-	{
+    {
         m_Driver = new UdpCNetworkDriver(new INetworkParameter[0]);
         if (m_Driver.Bind(new IPEndPoint(IPAddress.Any, 9000)) != 0)
             Debug.Log("Failed to bind to port 9000");
@@ -29,11 +29,11 @@ public class ServerBehaviour : MonoBehaviour
         m_Driver.Dispose();
         m_Connections.Dispose();
     }
-    
+
     void Update ()
-	{
+    {
         m_Driver.ScheduleUpdate().Complete();
-        
+
         // CleanUpConnections
         for (int i = 0; i < m_Connections.Length; i++)
         {
@@ -50,13 +50,13 @@ public class ServerBehaviour : MonoBehaviour
             m_Connections.Add(c);
             Debug.Log("Accepted a connection");
         }
-        
+
         DataStreamReader stream;
         for (int i = 0; i < m_Connections.Length; i++)
         {
             if (!m_Connections[i].IsCreated)
                 Assert.IsTrue(true);
-            
+
             NetworkEvent.Type cmd;
             while ((cmd = m_Driver.PopEventForConnection(m_Connections[i], out stream)) !=
                    NetworkEvent.Type.Empty)
@@ -65,7 +65,7 @@ public class ServerBehaviour : MonoBehaviour
                 {
                     var readerCtx = default(DataStreamReader.Context);
                     uint number = stream.ReadUInt(ref readerCtx);
-                    
+
                     Debug.Log("Got " + number + " from the Client adding + 2 to it.");
                     number +=2;
 

@@ -20,8 +20,8 @@ namespace Unity.Networking.Transport
             var slice = default(NativeSlice<byte>);
             unsafe
             {
-                ReliableUtility.Context* reliable = (ReliableUtility.Context*) ctx.internalProcessBuffer.GetUnsafePtr();
-                ReliableUtility.SharedContext* shared = (ReliableUtility.SharedContext*) ctx.internalSharedProcessBuffer.GetUnsafePtr();
+                ReliableUtility.Context* reliable = (ReliableUtility.Context*)ctx.internalProcessBuffer.GetUnsafePtr();
+                ReliableUtility.SharedContext* shared = (ReliableUtility.SharedContext*)ctx.internalSharedProcessBuffer.GetUnsafePtr();
                 shared->errorCode = 0;
                 if (reliable->Resume == ReliableUtility.NullEntry)
                 {
@@ -41,14 +41,14 @@ namespace Unity.Networking.Transport
 
                     if (result >= 0)
                     {
-                        var nextExpectedSequenceId = (ushort) (reliable->Delivered + 1);
+                        var nextExpectedSequenceId = (ushort)(reliable->Delivered + 1);
                         if (result == nextExpectedSequenceId)
                         {
                             reliable->Delivered = result;
                             slice = inboundBuffer.Slice(UnsafeUtility.SizeOf<ReliableUtility.PacketHeader>());
 
-                            if (needsResume = SequenceHelpers.GreaterThan16((ushort) shared->ReceivedPackets.Sequence,
-                                (ushort) result))
+                            if (needsResume = SequenceHelpers.GreaterThan16((ushort)shared->ReceivedPackets.Sequence,
+                                (ushort)result))
                             {
                                 reliable->Resume = (ushort)(result + 1);
                             }
@@ -76,7 +76,7 @@ namespace Unity.Networking.Transport
             var header = new ReliableUtility.PacketHeader();
             unsafe
             {
-                var reliable = (ReliableUtility.Context*) ctx.internalProcessBuffer.GetUnsafePtr();
+                var reliable = (ReliableUtility.Context*)ctx.internalProcessBuffer.GetUnsafePtr();
 
                 needsResume = ReliableUtility.ReleaseOrResumePackets(ctx);
 
