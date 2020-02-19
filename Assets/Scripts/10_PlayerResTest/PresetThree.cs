@@ -13,7 +13,7 @@ public class PresetThree : MonoBehaviour
 #if UNITY_EDITOR
         text.text += "Build Player, come back to this scene and follow the instruction to complete the test.\n\n";
 
-//#else
+#else
         text.text += "Checklist:\n";
         text.text += "1. Player window launches in <color=brown>fullscreen</color>.\n";
 
