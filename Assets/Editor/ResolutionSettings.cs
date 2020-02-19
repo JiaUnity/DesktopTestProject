@@ -129,8 +129,8 @@ public class ResolutionSettings : MonoBehaviour
         PlayerSettings.allowFullscreenSwitch = true;
         PlayerSettings.forceSingleInstance = false;
 
-        PlayerSettings.SetAspectRatio(AspectRatio.Aspect4by3, true);
-        PlayerSettings.SetAspectRatio(AspectRatio.Aspect5by4, false);
+        PlayerSettings.SetAspectRatio(AspectRatio.Aspect4by3, false);
+        PlayerSettings.SetAspectRatio(AspectRatio.Aspect5by4, true);
         PlayerSettings.SetAspectRatio(AspectRatio.Aspect16by9, false);
         PlayerSettings.SetAspectRatio(AspectRatio.Aspect16by10, true);
         PlayerSettings.SetAspectRatio(AspectRatio.AspectOthers, false);

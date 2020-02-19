@@ -27,7 +27,7 @@ public class PresetThree : MonoBehaviour
 #else
         text.text += "2. In fullscreen mode, when Player loses focus, the music <color=brown>stops playing</color>, but the Player window remains in place.\n";
         text.text += "3. In windowed mode, Player window <color=brown>cannot</color> be resized. The maximize button in the top right corner is disabled.\n";
-        text.text += "4. nly Resolutions in aspect ratios 5:4 and 16:10 should be available.\n";
+        text.text += "4. Only Resolutions in aspect ratios 5:4 and 16:10 should be available.\n";
         text.text += "Make sure these ones are available in the list below: <color=brown>720x576, 1920x1200</color>.\n";
         text.text += "Make sure these ones are not available in the list: <color=brown>640x480, 720x480, 1920x1080</color>.\n\n";
 #endif
