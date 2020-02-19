@@ -374,7 +374,7 @@ Behaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 83912468}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &83912472
 Camera:
   m_ObjectHideFlags: 0
