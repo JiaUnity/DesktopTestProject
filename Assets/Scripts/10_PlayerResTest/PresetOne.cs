@@ -21,8 +21,8 @@ public class PresetOne : MonoBehaviour
 
 #if UNITY_STANDALONE_OSX
         text.text += "\n";
-        text.text += "4. Player window <color=brown>cannot</color> swtich to windowed mode (Command + F does not work. The Green Dot is disabled.)\n"
-            text.text += "5. Dock and Menu Bar <color=brown>do not appear</color> when cursor is at the edge.\n";
+        text.text += "4. Player window <color=brown>cannot</color> swtich to windowed mode (Command + F does not work. The Green Dot and the menu item:<color=brown> Window -> Fullscreen</color> is disabled.)\n";
+        text.text += "5. Dock and Menu Bar <color=brown>do not appear</color> when cursor is at the edge.\n";
 #else
         text.text += " And the screen flickers during the change of focus.\n";
         text.text += "4. Player window <color=brown>cannot</color> swtich to windowed mode (Alt + Enter, etc,).\n";

@@ -22,15 +22,18 @@ public class PresetTwo : MonoBehaviour
 
 #if UNITY_STANDALONE_OSX
 
-        text.text += "5. Player window <color=brown>can</color> swtich to fullscreen (Command + F, Green Dot, etc.)\n";
-        text.text += "6. The menu item:<color=brown> Window -> Fullscreen</color> is greyed out.\n";
-        text.text += "10. The <color=brown>highest resolution</color> choice in the Dialog is 1920 x 1200.\n";
+        text.text += "5. Player window <color=brown>can</color> swtich to fullscreen (Command + F, Green Dot, Menu item: Window -> Fullscreen.)\n";
+        text.text += "6. Make sure the highest resolution available in the list below is <color=brown>1920x1200</color>.\n";
+        text.text += "7. Only Resolutions in aspect ratios 4:3 and 16:10 should be available.\n";
+        text.text += "Make sure these ones are available in the list below: <color=brown>640x480, 1920x1200</color>.\n";
+        text.text += "Make sure these ones are not available in the list: <color=brown>720x480, 720x576, 1920x1080</color>.\n\n";
+        
 #else
         text.text += "5. Player window <color=brown>can</color> swtich to fullscreen (Alt + Enter, etc.), and the screen does not flicker during the process.\n";
         text.text += "6. When Player window loses focus in fullscreen mode, it <color=brown>minimizes</color> into taskbar.\n";
         text.text += "7. An extra Player can start with the current one still running.\n";
-#endif
         text.text += "8. Resolutions in all aspect ratios should be available. Make sure these ones are available in the list below: <color=brown>640x480, 720x480, 720x576, 1920x1080, 1920x1200</color>\n\n";
+#endif
         text.text += "Available resolutions: <color=blue>" + ScreenManagerPreset.GetAvailableResolutions() + "</color>\n";
 
 #endif
