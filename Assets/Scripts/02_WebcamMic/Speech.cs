@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Windows.Speech;
@@ -8,16 +9,12 @@ public class Speech : MonoBehaviour
     public Text speech_phrase;
 
     private DictationRecognizer speech_recognizer;
-    private bool is_speech_available;
 
     // Use this for initialization
     void Start()
     {
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || UNITY_WSA
-        speech_recognizer = new DictationRecognizer();
-        speech_recognizer.DictationResult += (text, confidence) => OnSpeechResult(text, confidence);
-        speech_recognizer.DictationError += (error, hresult) => OnSpeechError(error, hresult);
-        speech_recognizer.Start();
+        StartCoroutine(InitSpeechRecognizer());
 #else
         OnWrongPlatform();
 #endif
@@ -32,6 +29,25 @@ public class Speech : MonoBehaviour
             speech_recognizer.DictationError -= OnSpeechError;
             speech_recognizer.Dispose();
         }
+    }
+
+    private IEnumerator InitSpeechRecognizer()
+    {
+        while (!Mic.Is_Mic_Initialized)
+            yield return new WaitForEndOfFrame();
+
+        if (Mic.Is_Mic_Available)
+        {
+            speech_recognizer = new DictationRecognizer();
+            speech_recognizer.DictationResult += (text, confidence) => OnSpeechResult(text, confidence);
+            speech_recognizer.DictationError += (error, hresult) => OnSpeechError(error, hresult);
+            speech_recognizer.Start();
+        }
+        else
+        {
+            speech_icon.color = Color.red;
+            speech_phrase.text = "<color=red>No microphone available.</color>";
+        }            
     }
 
     private void OnSpeechResult(string text, ConfidenceLevel confidence)

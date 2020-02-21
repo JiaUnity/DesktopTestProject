@@ -20,6 +20,9 @@ public class Mic : MonoBehaviour
     private int min_freq;
     private int max_freq;
 
+    public static bool Is_Mic_Initialized = false;
+    public static bool Is_Mic_Available = false;
+
     // Use this for initialization
     void Start()
     {
@@ -52,6 +55,7 @@ public class Mic : MonoBehaviour
             mic_icon.sprite = mic_unavailable;
             no_available_warning.SetActive(true);
             mic_select_menu.gameObject.SetActive(false);
+            Is_Mic_Available = false;
         }
         else
         {
@@ -62,7 +66,9 @@ public class Mic : MonoBehaviour
 
             mic_select_menu.AddOptions(Microphone.devices.Cast<string>().ToList());
             SwitchToMic(Microphone.devices[0]);
+            Is_Mic_Available = true;
         }
+        Is_Mic_Initialized = true;
     }
 
     private void SwitchToMic(string newMic)
