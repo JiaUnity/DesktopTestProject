@@ -47,7 +47,7 @@ public class Speech : MonoBehaviour
         {
             speech_icon.color = Color.red;
             speech_phrase.text = "<color=red>No microphone available.</color>";
-        }            
+        }
     }
 
     private void OnSpeechResult(string text, ConfidenceLevel confidence)

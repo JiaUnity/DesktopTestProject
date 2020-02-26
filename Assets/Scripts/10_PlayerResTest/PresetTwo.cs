@@ -27,7 +27,7 @@ public class PresetTwo : MonoBehaviour
         text.text += "7. Only Resolutions in aspect ratios 4:3 and 16:10 should be available.\n";
         text.text += "Make sure these ones are available in the list below: <color=brown>640x480, 1920x1200</color>.\n";
         text.text += "Make sure these ones are not available in the list: <color=brown>720x480, 720x576, 1920x1080</color>.\n\n";
-        
+
 #else
         text.text += "5. Player window <color=brown>can</color> swtich to fullscreen (Alt + Enter, etc.), and the screen does not flicker during the process.\n";
         text.text += "6. When Player window loses focus in fullscreen mode, it <color=brown>minimizes</color> into taskbar.\n";
